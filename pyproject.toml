@@ -5,6 +5,9 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
+    "autogen>=0.8.3",
+    "autogen-agentchat>=0.4.9.2",
+    "autogen-ext>=0.4.9.2",
     "langchain>=0.3.21",
     "langchain-anthropic>=0.3.10",
     "langchain-openai>=0.3.9",

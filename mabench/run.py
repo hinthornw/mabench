@@ -85,6 +85,7 @@ def run(
                     trial=i,
                 )
             except Exception as e:
+                ls.get_current_run_tree().error = repr(e)
                 result = EnvRunResult(
                     task_id=idx,
                     reward=0.0,
@@ -117,16 +118,20 @@ def run(
 def agent_factory(env: EnvProtocol, args: argparse.Namespace):
     if args.agent_strategy == "single":
         from langgraph.prebuilt import create_react_agent
+        from langgraph.checkpoint.memory import InMemorySaver
 
         prompt = f"""You are a helpful support assistant. In assisting the user, please comply with the following policies.
 
 {env.wiki}"""  # noqa: E501
 
-        return create_react_agent(
+        agent = create_react_agent(
             model=args.model,
             prompt=prompt,
             tools=list(env.tools_map.values()),
+            checkpointer=InMemorySaver(),
         )
+        agent.name = "Support Agent"
+        return agent
     else:
         raise ValueError(f"Unknown agent strategy: {args.agent_strategy}")
 
@@ -253,6 +258,7 @@ def main():
         print(f"\n📄 Results saved to {file_str}\n")
 
 
+@ls.traceable(name="Solve")
 def solve(
     agent: CompiledStateGraph,
     env: Env,
@@ -275,9 +281,11 @@ def solve(
         next_message = {"role": "user", "content": obs}
         if env_response.done:
             break
-    state = agent.get_state()
+    state = agent.get_state(config)
+    messages = state.values["messages"]
+
     return SolveResult(
-        messages=state["messages"],
+        messages=messages,
         reward=reward,
         info=info,
     )

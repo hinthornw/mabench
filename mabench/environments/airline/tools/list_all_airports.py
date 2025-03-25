@@ -1,15 +1,14 @@
 """Adapted from τ-bench https://arxiv.org/abs/2406.12045"""
 
 import json
-from typing import Any, Dict
 
 
-def list_all_airports(data: Dict[str, Any]) -> str:
+def list_all_airports() -> str:
     """
     List all airports and their cities.
     
     Args:
-        data: The data dictionary (not used in this function).
+        None
         
     Returns:
         A JSON string mapping airport codes to city names.

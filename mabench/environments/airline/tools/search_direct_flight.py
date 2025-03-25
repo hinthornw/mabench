@@ -1,17 +1,14 @@
 """Adapted from τ-bench https://arxiv.org/abs/2406.12045"""
 
 import json
-from typing import Any, Dict
+from mabench.utils import get_data
 
 
-def search_direct_flight(
-    data: Dict[str, Any], origin: str, destination: str, date: str
-) -> str:
+def search_direct_flight(origin: str, destination: str, date: str) -> str:
     """
     Search direct flights between two cities on a specific date.
     
     Args:
-        data: The data dictionary containing flight information.
         origin: The origin city airport in three letters, such as 'JFK'.
         destination: The destination city airport in three letters, such as 'LAX'.
         date: The date of the flight in the format 'YYYY-MM-DD', such as '2024-01-01'.
@@ -19,6 +16,7 @@ def search_direct_flight(
     Returns:
         A JSON string containing the list of available flights.
     """
+    data = get_data()
     flights = data["flights"]
     results = []
     for flight in flights.values():

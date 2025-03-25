@@ -2,6 +2,7 @@
 
 from pydantic import BaseModel, Field
 from typing import List, Dict, Any, Optional, Union
+from langchain_core.messages import AnyMessage
 
 RESPOND_ACTION_NAME = "respond"
 RESPOND_ACTION_FIELD_NAME = "content"
@@ -46,7 +47,7 @@ class RewardResult(BaseModel):
 
 class SolveResult(BaseModel):
     reward: float
-    messages: List[Dict[str, Any]]
+    messages: list
     info: Dict[str, Any]
     total_cost: Optional[float] = None
 

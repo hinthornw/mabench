@@ -1,11 +1,10 @@
 """Adapted from τ-bench https://arxiv.org/abs/2406.12045"""
 
 import json
-from typing import Any, Dict
+from mabench.utils import get_data
 
 
 def update_reservation_baggages(
-    data: Dict[str, Any],
     reservation_id: str,
     total_baggages: int,
     nonfree_baggages: int,
@@ -15,19 +14,19 @@ def update_reservation_baggages(
     Update the baggage information of a reservation.
     
     Args:
-        data: The data dictionary containing user and reservation information.
         reservation_id: The reservation ID, such as 'ZFA04Y'.
         total_baggages: The updated total number of baggage items included in the
                         reservation.
         nonfree_baggages: The updated number of non-free baggage items included 
                          in the reservation.
-        payment_id: The payment id stored in user profile, such as 'credit_card_7815826',
-                   'gift_card_7815826',
+        payment_id: The payment id stored in user profile, such as
+                   'credit_card_7815826', 'gift_card_7815826', or
                    'certificate_7815826'.
         
     Returns:
         A JSON string representing the updated reservation or an error message.
     """
+    data = get_data()
     users, reservations = data["users"], data["reservations"]
     if reservation_id not in reservations:
         return "Error: reservation not found"

@@ -1,20 +1,20 @@
 """Adapted from τ-bench https://arxiv.org/abs/2406.12045"""
 
 import json
-from typing import Any, Dict
+from mabench.utils import get_data
 
 
-def cancel_reservation(data: Dict[str, Any], reservation_id: str) -> str:
+def cancel_reservation(reservation_id: str) -> str:
     """
     Cancel the whole reservation.
     
     Args:
-        data: The data dictionary containing reservations information.
         reservation_id: The reservation ID, such as 'ZFA04Y'.
         
     Returns:
         A JSON string representing the cancelled reservation or an error message.
     """
+    data = get_data()
     reservations = data["reservations"]
     if reservation_id not in reservations:
         return "Error: reservation not found"

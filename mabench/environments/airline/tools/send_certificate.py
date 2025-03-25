@@ -1,10 +1,9 @@
 """Adapted from τ-bench https://arxiv.org/abs/2406.12045"""
 
-from typing import Any, Dict
+from mabench.utils import get_data
 
 
 def send_certificate(
-    data: Dict[str, Any],
     user_id: str,
     amount: int,
 ) -> str:
@@ -12,13 +11,13 @@ def send_certificate(
     Send a certificate to a user.
     
     Args:
-        data: The data dictionary containing user information.
         user_id: The ID of the user to book the reservation, such as 'sara_doe_496'.
         amount: Certificate amount to send.
         
     Returns:
         A confirmation message or an error message.
     """
+    data = get_data()
     users = data["users"]
     if user_id not in users:
         return "Error: user not found"

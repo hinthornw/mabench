@@ -2,11 +2,11 @@
 
 import json
 from copy import deepcopy
-from typing import Any, Dict, List
+from typing import List, Dict, Any
+from mabench.utils import get_data
 
 
 def update_reservation_flights(
-    data: Dict[str, Any],
     reservation_id: str,
     cabin: str,
     flights: List[Dict[str, Any]],
@@ -16,7 +16,6 @@ def update_reservation_flights(
     Update the flight information of a reservation.
     
     Args:
-        data: The data dictionary containing user and reservation information.
         reservation_id: The reservation ID, such as 'ZFA04Y'.
         cabin: The cabin class, one of 'basic_economy', 'economy', or 'business'.
         flights: An array of objects containing details about each piece of flight in
@@ -31,6 +30,7 @@ def update_reservation_flights(
     Returns:
         A JSON string representing the updated reservation or an error message.
     """
+    data = get_data()
     users, reservations = data["users"], data["reservations"]
     if reservation_id not in reservations:
         return "Error: reservation not found"
@@ -63,7 +63,9 @@ def update_reservation_flights(
             )
         flight_date_data = flight_data["dates"][flight["date"]]
         if flight_date_data["status"] != "available":
-            return f"Error: flight {flight_number} not available on date {flight['date']}"
+            return (
+                f"Error: flight {flight_number} not available on date {flight['date']}"
+            )
         if flight_date_data["available_seats"][cabin] < len(
             reservation["passengers"]
         ):

@@ -5,6 +5,7 @@ import enum
 
 from typing import Optional, List, Dict, Any, Union
 from langchain.chat_models import init_chat_model
+import langsmith as ls
 
 
 class BaseUserSimulationEnv(abc.ABC):
@@ -43,6 +44,7 @@ class LLMUserSimulationEnv(BaseUserSimulationEnv):
         self.total_cost = 0.0
         self.reset()
 
+    @ls.traceable(name="LLMUserSimulationEnv.generate_next_message")
     def generate_next_message(self, messages: List[Dict[str, Any]]) -> str:
         res = self.model.invoke(messages)
         self.messages.append({"role": "assistant", "content": res.content})
@@ -64,6 +66,7 @@ Rules:
 - Do not repeat the exact instruction in the conversation. Instead, use your own words to convey the same information.
 - Try to make the conversation as natural as possible, and stick to the personalities in the instruction."""
 
+    @ls.traceable(name="LLMUserSimulationEnv.reset")
     def reset(self, instruction: Optional[str] = None) -> str:
         self.messages = [
             {
@@ -74,6 +77,7 @@ Rules:
         ]
         return self.generate_next_message(self.messages)
 
+    @ls.traceable(name="LLMUserSimulationEnv.step")
     def step(self, content: str) -> str:
         self.messages.append({"role": "user", "content": content})
         return self.generate_next_message(self.messages)

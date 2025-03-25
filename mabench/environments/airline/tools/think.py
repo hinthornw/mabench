@@ -1,9 +1,7 @@
 """Adapted from τ-bench https://arxiv.org/abs/2406.12045"""
 
-from typing import Any, Dict
 
-
-def think(data: Dict[str, Any], thought: str) -> str:
+def think(thought: str) -> str:
     """
     Use this function to think about something.
     
@@ -11,7 +9,6 @@ def think(data: Dict[str, Any], thought: str) -> str:
     the thought to the log. Use it when complex reasoning is needed.
     
     Args:
-        data: The data dictionary (not used in this function).
         thought: A thought to think about.
         
     Returns:

@@ -4,7 +4,11 @@ __pycache__/
 build/
 dist/
 wheels/
+results/
 *.egg-info
 
 # Virtual environments
 .venv
+*.ipynb
+.ipynb_checkpoints/
+foo.py

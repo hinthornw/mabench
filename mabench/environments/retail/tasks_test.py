@@ -1,3 +1,4 @@
+# mypy: ignore-errors
 from mabench.bench_types import Task, Action
 
 TASKS_TEST = [

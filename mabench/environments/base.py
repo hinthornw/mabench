@@ -104,9 +104,15 @@ class Env(object):
         self.task = self.tasks[task_index]
         self.actions = []
         initial_observation = self.user.reset(instruction=self.task.instruction)
+        self.set_data(self.data)
         return EnvResetResponse(
             observation=initial_observation, info=EnvInfo(task=self.task, source="user")
         )
+
+    def set_data(self, data: Dict[str, Any]):
+        from mabench.utils import set_data
+
+        set_data(data)
 
     @ls.traceable
     def step(self, action: Action | list) -> EnvResponse:
