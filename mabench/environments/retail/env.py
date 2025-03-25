@@ -45,4 +45,4 @@ class MockRetailDomainEnv(Env):
 
     @property
     def tools_info(self) -> dict[str, dict[str, Callable]]:
-        return {self.name: {self.tools_map}}
+        return {self.name: self.tools_map}

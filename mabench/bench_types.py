@@ -2,7 +2,6 @@
 
 from pydantic import BaseModel, Field
 from typing import List, Dict, Any, Optional, Union
-from langchain_core.messages import AnyMessage
 
 RESPOND_ACTION_NAME = "respond"
 RESPOND_ACTION_FIELD_NAME = "content"
@@ -75,5 +74,5 @@ class EnvRunResult(BaseModel):
     task_id: int
     reward: float
     info: Dict[str, Any]
-    traj: List[Dict[str, Any]]
+    traj: List[Any]
     trial: int

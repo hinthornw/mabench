@@ -5,7 +5,7 @@ from mabench.environments.airline.rules import RULES
 from mabench.environments.airline.tools import ALL_TOOLS
 from mabench.environments.airline.wiki import WIKI
 from mabench.environments.base import Env
-from typing import Optional, Union
+from typing import Optional, Union, Callable
 from mabench.environments.user import UserStrategy
 
 
@@ -35,3 +35,7 @@ class MockAirlineDomainEnv(Env):
             task_index=task_index,
         )
         self.terminate_tools = ["transfer_to_human_agents"]
+
+    @property
+    def tools_info(self) -> dict[str, dict[str, Callable]]:
+        return {self.name: self.tools_map}

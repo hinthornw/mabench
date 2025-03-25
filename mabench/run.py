@@ -35,6 +35,7 @@ def run(
         user_model=args.user_model,
         user_provider=args.user_model_provider,
         task_split=args.task_split,
+        n_distractors=args.n_distractors,
     )
     agent = agent_factory(
         env=env,
@@ -51,68 +52,81 @@ def run(
         print(
             f"Running tasks {args.start_index} to {end_index} (checkpoint path: {ckpt_path})"
         )
-    for i in range(args.num_trials):
-        if args.task_ids and len(args.task_ids) > 0:
-            idxs = args.task_ids
-        else:
-            idxs = list(range(args.start_index, end_index))
-        if args.shuffle:
-            random.shuffle(idxs)
+    response_error = None
+    try:
+        for i in range(args.num_trials):
+            if args.task_ids and len(args.task_ids) > 0:
+                idxs = args.task_ids
+            else:
+                idxs = list(range(args.start_index, end_index))
+            if args.shuffle:
+                random.shuffle(idxs)
 
-        @ls.traceable(name="Run Experiment")
-        def _run(idx: int) -> EnvRunResult:
-            isolated_env = get_env(
-                args.env,
-                user_strategy=args.user_strategy,
-                user_model=args.user_model,
-                task_split=args.task_split,
-                user_provider=args.user_model_provider,
-                task_index=idx,
-            )
-
-            print(f"Running task {idx}")
-            try:
-                res = solve(
-                    agent,
-                    env=isolated_env,
+            @ls.traceable(name="Run Experiment")
+            def _run(idx: int) -> EnvRunResult:
+                rt = ls.get_current_run_tree()
+                assert rt is not None
+                rt.metadata.update(vars(args))
+                isolated_env = get_env(
+                    args.env,
+                    user_strategy=args.user_strategy,
+                    user_model=args.user_model,
+                    task_split=args.task_split,
+                    user_provider=args.user_model_provider,
                     task_index=idx,
+                    n_distractors=args.n_distractors,
                 )
-                result = EnvRunResult(
-                    task_id=idx,
-                    reward=res.reward,
-                    info=res.info,
-                    traj=res.messages,
-                    trial=i,
-                )
-            except Exception as e:
-                ls.get_current_run_tree().error = repr(e)
-                result = EnvRunResult(
-                    task_id=idx,
-                    reward=0.0,
-                    info={"error": str(e), "traceback": traceback.format_exc()},
-                    traj=[],
-                    trial=i,
-                )
-            print(
-                "✅" if result.reward == 1 else "❌",
-                f"task_id={idx}",
-                result.info,
-            )
-            print("-----")
-            with lock:
-                data = []
-                if os.path.exists(ckpt_path):
-                    with open(ckpt_path, "r") as f:
-                        data = json.load(f)
-                with open(ckpt_path, "w") as f:
-                    json.dump(data + [result.model_dump()], f, indent=2)
-            return result
 
-        with ThreadPoolExecutor(max_workers=args.max_concurrency) as executor:
-            res = list(executor.map(_run, idxs))
-            results.extend(res)
+                print(f"Running task {idx}")
+                try:
+                    res = solve(
+                        agent,
+                        env=isolated_env,
+                        task_index=idx,
+                    )
+                    result = EnvRunResult(
+                        task_id=idx,
+                        reward=res.reward,
+                        info=res.info,
+                        traj=res.messages,
+                        trial=i,
+                    )
+                except BaseException as e:
+                    ls.get_current_run_tree().error = repr(e)
+                    result = EnvRunResult(
+                        task_id=idx,
+                        reward=0.0,
+                        info={"error": str(e), "traceback": traceback.format_exc()},
+                        traj=[],
+                        trial=i,
+                    )
+                print(
+                    "✅" if result.reward == 1 else "❌",
+                    f"task_id={idx}",
+                    result.info,
+                )
+                print("-----")
+                with lock:
+                    data = []
+                    if os.path.exists(ckpt_path):
+                        with open(ckpt_path, "r") as f:
+                            data = json.load(f)
+                    with open(ckpt_path, "w") as f:
+                        json.dump(data + [result.model_dump()], f, indent=2)
+                rt.client.create_feedback(rt.id, key="reward", score=result.reward)
+                return result
 
-    return results
+            if args.max_concurrency == 0:
+                for idx in idxs:
+                    results.append(_run(idx))
+            else:
+                with ThreadPoolExecutor(max_workers=args.max_concurrency) as executor:
+                    res = list(executor.map(_run, idxs))
+                    results.extend(res)
+    except Exception as e:
+        response_error = e
+
+    return results, response_error
 
 
 def agent_factory(env: EnvProtocol, args: argparse.Namespace):
@@ -120,18 +134,35 @@ def agent_factory(env: EnvProtocol, args: argparse.Namespace):
         from langgraph.prebuilt import create_react_agent
         from langgraph.checkpoint.memory import InMemorySaver
 
-        prompt = f"""You are a helpful support assistant. In assisting the user, please comply with the following policies.
+        prompt = f"""You are a helpful support assistant.
 
-{env.wiki}"""  # noqa: E501
+In assisting the user, please comply with the following policies.
 
+{env.wiki}
+
+# Instruction
+You need to act as an agent that use your tools to help the user according to the above policy.
+Try to be helpful and always follow the policy."""  # noqa: E501
+        tools = list(env.tools_map.values())
+        print(f"Constructing agent with {len(tools)} tools")
         agent = create_react_agent(
             model=args.model,
             prompt=prompt,
-            tools=list(env.tools_map.values()),
+            tools=tools,
             checkpointer=InMemorySaver(),
         )
         agent.name = "Support Agent"
         return agent
+    elif args.agent_strategy == "supervisor":
+        raise NotImplementedError(
+            f"Agent strategy {args.agent_strategy} not yet implemented"
+        )
+
+    elif args.agent_strategy == "swarm":
+        raise NotImplementedError(
+            f"Agent strategy {args.agent_strategy} not implemented"
+        )
+
     else:
         raise ValueError(f"Unknown agent strategy: {args.agent_strategy}")
 
@@ -236,17 +267,23 @@ def main():
         type=str,
         help="Path to a jsonlines file containing few shot displays",
     )
+    parser.add_argument(
+        "--n-distractors",
+        type=int,
+        default=0,
+        help="Number of distractors to use",
+    )
     args = parser.parse_args()
     print(args)
     random.seed(args.seed)
 
     time_str = datetime.now().strftime("%m%d%H%M%S")
-    file_str = f"{args.log_dir}/{args.agent_strategy}-{args.model.split('/')[-1]}-{args.temperature}_range_{args.start_index}-{args.end_index}_user-{args.user_model}-{args.user_strategy}_{time_str}.json"
+    file_str = f"{args.log_dir}/{args.agent_strategy}-{args.model.split('/')[-1]}-distract_{args.n_distractors}-{args.temperature}_range_{args.start_index}-{args.end_index}_user-{args.user_model}-{args.user_strategy}_{time_str}.json"
 
     if not os.path.exists(args.log_dir):
         os.makedirs(args.log_dir)
 
-    results = run(
+    results, response_error = run(
         args=args,
         ckpt_path=file_str,
     )
@@ -256,6 +293,8 @@ def main():
     with open(file_str, "w") as f:
         json.dump([result.model_dump() for result in results], f, indent=2)
         print(f"\n📄 Results saved to {file_str}\n")
+    if response_error:
+        raise response_error
 
 
 @ls.traceable(name="Solve")
@@ -263,7 +302,7 @@ def solve(
     agent: CompiledStateGraph,
     env: Env,
     task_index: Optional[int] = None,
-    max_num_turns: int = 10,
+    max_num_turns: int = 30,
 ) -> SolveResult:
     config = {"configurable": {"thread_id": str(uuid.uuid4())}}
     response = env.reset(task_index=task_index)

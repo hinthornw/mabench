@@ -12,6 +12,7 @@ def get_env(
     task_split: str,
     user_provider: Optional[str] = None,
     task_index: Optional[int] = None,
+    n_distractors: Optional[int] = None,
 ) -> Env:
     if env_name == "retail":
         from mabench.environments.retail import MockRetailDomainEnv
@@ -37,6 +38,77 @@ def get_env(
         from mabench.environments.combined import CombinedEnv
 
         return CombinedEnv(
+            n_distractors=n_distractors,
+            user_strategy=user_strategy,
+            user_model=user_model,
+            task_split=task_split,
+            user_provider=user_provider,
+            task_index=task_index,
+        )
+    elif env_name == "spotify":
+        from mabench.environments.noisy.spotify import MockSpotifyDomainEnv
+
+        return MockSpotifyDomainEnv(
+            user_strategy=user_strategy,
+            user_model=user_model,
+            task_split=task_split,
+            user_provider=user_provider,
+            task_index=task_index,
+        )
+    elif env_name == "techsupport":
+        from mabench.environments.noisy.techsupport import MockTechSupportEnv
+
+        return MockTechSupportEnv(
+            user_strategy=user_strategy,
+            user_model=user_model,
+            task_split=task_split,
+            user_provider=user_provider,
+            task_index=task_index,
+        )
+    elif env_name == "financialadvisor":
+        from mabench.environments.noisy.financialadvisor import MockFinancialAdvisorEnv
+
+        return MockFinancialAdvisorEnv(
+            user_strategy=user_strategy,
+            user_model=user_model,
+            task_split=task_split,
+            user_provider=user_provider,
+            task_index=task_index,
+        )
+    elif env_name == "automotive":
+        from mabench.environments.noisy.automotive import MockAutomotiveDomainEnv
+
+        return MockAutomotiveDomainEnv(
+            user_strategy=user_strategy,
+            user_model=user_model,
+            task_split=task_split,
+            user_provider=user_provider,
+            task_index=task_index,
+        )
+    elif env_name == "homeimprovement":
+        from mabench.environments.noisy.homeimprovement import MockHomeImprovementEnv
+
+        return MockHomeImprovementEnv(
+            user_strategy=user_strategy,
+            user_model=user_model,
+            task_split=task_split,
+            user_provider=user_provider,
+            task_index=task_index,
+        )
+    elif env_name == "pharmacy":
+        from mabench.environments.noisy.pharmacy import MockPharmacyEnv
+
+        return MockPharmacyEnv(
+            user_strategy=user_strategy,
+            user_model=user_model,
+            task_split=task_split,
+            user_provider=user_provider,
+            task_index=task_index,
+        )
+    elif env_name == "restaurant":
+        from mabench.environments.noisy.restaurant import MockRestaurantEnv
+
+        return MockRestaurantEnv(
             user_strategy=user_strategy,
             user_model=user_model,
             task_split=task_split,

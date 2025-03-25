@@ -3,7 +3,9 @@
 import random
 from hashlib import sha256
 from typing import Any, Callable, Dict, List, Optional, Protocol, Set, Union, Tuple
+import functools
 
+from langchain_core.tools import tool as as_lc_tool
 from mabench.environments.user import load_user, UserStrategy
 from mabench.bench_types import (
     Action,
@@ -39,6 +41,19 @@ def consistent_hash(
     value: Hashable,
 ) -> str:
     return sha256(str(value).encode("utf-8")).hexdigest()
+
+
+def as_tool(fn):
+    @functools.wraps(fn)
+    def wrapper(*args, **kwargs):
+        result = fn(*args, **kwargs)
+        if "error:" in str(result).lower():
+            rt = ls.get_current_run_tree()
+            if rt is not None:
+                rt.error = str(result)
+        return result
+
+    return as_lc_tool()(wrapper)
 
 
 class EnvProtocol(Protocol):
@@ -80,15 +95,17 @@ class Env(object):
     ) -> None:
         super().__init__()
         self.data_load_func = data_load_func
-        self.data = data_load_func()
-        self.tools_map: Dict[str, Callable] = {tool.__name__: tool for tool in tools}
+        self.data = self.data_load_func()
+        self.tools_map: Dict[str, Callable] = {
+            tool.__name__: as_tool(tool) for tool in tools
+        }
         self.terminate_tools = []
         self.tasks = tasks
         if task_index is not None:
             self.task_index = task_index
         else:
             self.task_index = random.randint(0, len(tasks))
-        self.task = tasks[self.task_index]
+        self.task = tasks[self.task_index] if tasks else None
         self.wiki = wiki
         self.rules = rules
         self.user = load_user(
@@ -101,7 +118,7 @@ class Env(object):
             task_index = random.randint(0, len(self.tasks))
         self.task_index = task_index
         self.data = self.data_load_func()
-        self.task = self.tasks[task_index]
+        self.task = self.tasks[task_index] if self.tasks else None
         self.actions = []
         initial_observation = self.user.reset(instruction=self.task.instruction)
         self.set_data(self.data)
@@ -118,6 +135,9 @@ class Env(object):
     def step(self, action: Action | list) -> EnvResponse:
         if isinstance(action, Action):
             return self._step_action(action)
+        self.actions.append(
+            Action(name=RESPOND_ACTION_NAME, kwargs={"content": action[-1].content})
+        )
         # It's a list of messages, from langgraph.
         info = EnvInfo(task=self.task, source="user")
         observation = self.user.step(action[-1].content)
@@ -142,9 +162,7 @@ class Env(object):
             done = "###STOP###" in observation
         elif action.name in self.tools_map:
             try:
-                observation = self.tools_map[action.name].invoke(
-                    data=self.data, **action.kwargs
-                )
+                observation = self.tools_map[action.name].invoke(action.kwargs)
             except Exception as e:
                 observation = f"Error: {e}"
             info.source = action.name
@@ -162,18 +180,24 @@ class Env(object):
         return EnvResponse(observation=observation, reward=reward, done=done, info=info)
 
     def get_data_hash(self) -> str:
-        return consistent_hash(to_hashable(self.data))
+        from mabench.utils import get_data
+
+        data = get_data()
+        return consistent_hash(to_hashable(data))
 
     def calculate_reward(self) -> RewardResult:
         data_hash = self.get_data_hash()
-        reward = 1.0
+        reward = 1.0  # Start out assuming success
+        # You can fail if either:
+        # a) You don't take the required actions
+        # b) You don't respond with the right things. (really lax here though)
         actions = [
             action for action in self.task.actions if action.name != RESPOND_ACTION_NAME
         ]
 
         # Check if the database changes are correct. If they are not correct, then we set the reward to 0.
         # TODO: cache gt_data_hash in tasks.py (low priority)
-        self.data = self.data_load_func()
+        self.set_data(self.data_load_func())
         with ls.trace(
             "calculate_reward", inputs={"data_hash": data_hash, "actions": actions}
         ) as rt:
@@ -187,8 +211,12 @@ class Env(object):
                 info = RewardActionInfo(
                     r_actions=data_hash == gt_data_hash, gt_data_hash=gt_data_hash
                 )
+                # We compare side effects.
                 if not info.r_actions:
+                    print("OH DIFFERENT", data_hash, gt_data_hash)
                     reward = 0.0
+                else:
+                    print("OH SAME DB STATE", data_hash, gt_data_hash)
                 rtgt.add_outputs(
                     {"info": info, "reward": reward, "gt_data_hash": gt_data_hash}
                 )
