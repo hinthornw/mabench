@@ -18,6 +18,14 @@ class Task(BaseModel):
     instruction: str
     outputs: List[str]
 
+    @property
+    def example_inputs(self):
+        return {"instruction": self.instruction, "user_id": self.user_id}
+
+    @property
+    def example_outputs(self):
+        return {"outputs": self.outputs, "actions": [act.model_dump(mode="json") for act in self.actions]}
+
 
 class RewardOutputInfo(BaseModel):
     r_outputs: float

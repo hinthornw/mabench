@@ -77,6 +77,8 @@ class EnvProtocol(Protocol):
 
     def calculate_reward(self) -> RewardResult: ...
 
+    
+
 
 class Env(object):
     name: str
@@ -135,12 +137,15 @@ class Env(object):
     def step(self, action: Action | list) -> EnvResponse:
         if isinstance(action, Action):
             return self._step_action(action)
+        
+        msg = action[-1]
+        msg_content = msg.content if hasattr(msg, "content") else msg["content"]
         self.actions.append(
-            Action(name=RESPOND_ACTION_NAME, kwargs={"content": action[-1].content})
+            Action(name=RESPOND_ACTION_NAME, kwargs={"content": msg_content})
         )
         # It's a list of messages, from langgraph.
         info = EnvInfo(task=self.task, source="user")
-        observation = self.user.step(action[-1].content)
+        observation = self.user.step(msg_content)
         done = "###STOP###" in observation
         reward = 0
         if done:

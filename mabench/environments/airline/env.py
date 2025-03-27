@@ -10,6 +10,7 @@ from mabench.environments.user import UserStrategy
 
 
 class MockAirlineDomainEnv(Env):
+    name: str = "airline"
     def __init__(
         self,
         user_strategy: Union[str, UserStrategy] = UserStrategy.LLM,

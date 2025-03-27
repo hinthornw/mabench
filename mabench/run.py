@@ -1,7 +1,10 @@
 # Adapted from τ-bench https://arxiv.org/abs/2406.12045 by Sierra
 import langsmith as ls
 import uuid
+from tqdm import tqdm
+from urllib3.util import response
 from mabench.environments.base import Env
+import concurrent.futures
 from mabench.bench_types import (
     SolveResult,
 )
@@ -18,10 +21,12 @@ from datetime import datetime
 from typing import List
 from concurrent.futures import ThreadPoolExecutor
 
-from mabench.environments import get_env, EnvProtocol
+from mabench.environments import get_env
 from mabench.bench_types import EnvRunResult
+from mabench.agents import agent_factory
 from mabench.environments.user import UserStrategy
 from langgraph.graph.state import CompiledStateGraph
+from langgraph.pregel.remote import RemoteGraph
 
 
 def run(
@@ -37,10 +42,14 @@ def run(
         task_split=args.task_split,
         n_distractors=args.n_distractors,
     )
-    agent = agent_factory(
-        env=env,
-        args=args,
-    )
+    if args.remote:
+        agent = RemoteGraph("graphs", url="http://localhost:2024")
+    else:
+        agent = agent_factory(
+            env=env,
+            agent_strategy=args.agent_strategy,
+            model=args.model,
+        )
     end_index = (
         len(env.tasks) if args.end_index == -1 else min(args.end_index, len(env.tasks))
     )
@@ -53,6 +62,32 @@ def run(
             f"Running tasks {args.start_index} to {end_index} (checkpoint path: {ckpt_path})"
         )
     response_error = None
+    lsc = ls.Client()
+    dataset_name = f"τ-bench/{args.env}"
+    if not lsc.has_dataset(dataset_name=dataset_name):
+        ds = lsc.create_dataset(dataset_name)
+        examples_ = [
+            {
+                "inputs": task.example_inputs,
+                "outputs": task.example_outputs,
+                "metadata": {"index": idx},
+            }
+            for idx, task in enumerate(env.tasks)
+        ]
+        lsc.create_examples(examples=examples_, dataset_id=ds.id)
+        dataset_id = ds.id
+    else:
+        dataset_id = lsc.read_dataset(dataset_name=dataset_name).id
+    example_ids = {
+        example.metadata["index"]: example.id
+        for example in lsc.list_examples(dataset_id=dataset_id)
+    }
+
+    experiment = lsc.create_project(
+        ckpt_path.split("/")[-1].split(".json")[0],
+        reference_dataset_id=dataset_id,
+        metadata={**vars(args), "env": env.name},
+    )
     try:
         for i in range(args.num_trials):
             if args.task_ids and len(args.task_ids) > 0:
@@ -63,10 +98,19 @@ def run(
                 random.shuffle(idxs)
 
             @ls.traceable(name="Run Experiment")
-            def _run(idx: int) -> EnvRunResult:
+            def _run(idx: int, agent) -> EnvRunResult:
                 rt = ls.get_current_run_tree()
                 assert rt is not None
+                the_agent = agent
+                if args.remote:
+                    the_agent = RemoteGraph(
+                        "graphs",
+                        url="http://localhost:2024",
+                        headers=rt.to_headers(),
+                    )
                 rt.metadata.update(vars(args))
+                rt.metadata["task_index"] = idx
+                rt.metadata["experiment_path"] = str(ckpt_path)
                 isolated_env = get_env(
                     args.env,
                     user_strategy=args.user_strategy,
@@ -80,8 +124,9 @@ def run(
                 print(f"Running task {idx}")
                 try:
                     res = solve(
-                        agent,
+                        the_agent,
                         env=isolated_env,
+                        args=args,
                         task_index=idx,
                     )
                     result = EnvRunResult(
@@ -116,55 +161,43 @@ def run(
                 rt.client.create_feedback(rt.id, key="reward", score=result.reward)
                 return result
 
+            def _run_example(idx: int) -> EnvRunResult:
+                return _run(
+                    idx,
+                    agent=agent,
+                    langsmith_extra={
+                        "reference_example_id": example_ids[idx],
+                        "project_name": experiment.name,
+                    },
+                )
+
             if args.max_concurrency == 0:
-                for idx in idxs:
-                    results.append(_run(idx))
+                for idx in tqdm(idxs):
+                    try:
+                        results.append(_run_example(idx))
+                    except Exception as e:
+                        logger.error(f"Error running task {idx}: {e}")
+                        results.append(
+                            EnvRunResult(
+                                task_id=idx,
+                                reward=0.0,
+                                info={"error": str(e), "traceback": traceback.format_exc()},
+                                traj=[],
+                                trial=idx,
+                            )
+                        )
             else:
                 with ThreadPoolExecutor(max_workers=args.max_concurrency) as executor:
-                    res = list(executor.map(_run, idxs))
-                    results.extend(res)
+                    futures = [executor.submit(_run_example, idx) for idx in idxs]
+                    results.extend(
+                        [
+                            fut.result()
+                            for fut in concurrent.futures.as_completed(futures)
+                        ]
+                    )
     except Exception as e:
         response_error = e
-
     return results, response_error
-
-
-def agent_factory(env: EnvProtocol, args: argparse.Namespace):
-    if args.agent_strategy == "single":
-        from langgraph.prebuilt import create_react_agent
-        from langgraph.checkpoint.memory import InMemorySaver
-
-        prompt = f"""You are a helpful support assistant.
-
-In assisting the user, please comply with the following policies.
-
-{env.wiki}
-
-# Instruction
-You need to act as an agent that use your tools to help the user according to the above policy.
-Try to be helpful and always follow the policy."""  # noqa: E501
-        tools = list(env.tools_map.values())
-        print(f"Constructing agent with {len(tools)} tools")
-        agent = create_react_agent(
-            model=args.model,
-            prompt=prompt,
-            tools=tools,
-            checkpointer=InMemorySaver(),
-        )
-        agent.name = "Support Agent"
-        return agent
-    elif args.agent_strategy == "supervisor":
-        raise NotImplementedError(
-            f"Agent strategy {args.agent_strategy} not yet implemented"
-        )
-
-    elif args.agent_strategy == "swarm":
-        raise NotImplementedError(
-            f"Agent strategy {args.agent_strategy} not implemented"
-        )
-
-    else:
-        raise ValueError(f"Unknown agent strategy: {args.agent_strategy}")
 
 
 def display_metrics(results: List[EnvRunResult]) -> None:
@@ -224,7 +257,12 @@ def main():
         "--agent-strategy",
         type=str,
         default="tool-calling",
-        choices=["single"],
+        choices=["single", "supervisor", "swarm"],
+    )
+    parser.add_argument(
+        "--remote",
+        action="store_true",
+        help="Run the agent remotely",
     )
     parser.add_argument(
         "--temperature",
@@ -287,7 +325,8 @@ def main():
         args=args,
         ckpt_path=file_str,
     )
-
+    if not results and response_error:
+        raise response_error
     display_metrics(results)
 
     with open(file_str, "w") as f:
@@ -301,14 +340,25 @@ def main():
 def solve(
     agent: CompiledStateGraph,
     env: Env,
+    args,
     task_index: Optional[int] = None,
     max_num_turns: int = 30,
 ) -> SolveResult:
-    config = {"configurable": {"thread_id": str(uuid.uuid4())}}
+    config = {
+        "configurable": {
+            "thread_id": str(uuid.uuid4()),
+            "agent_strategy": args.agent_strategy,
+            "user_model": args.user_model,
+            "task_split": args.task_split,
+            "n_distractors": args.n_distractors,
+        }
+    }
     response = env.reset(task_index=task_index)
     reward = 0.0
     next_message = {"role": "user", "content": response.observation}
     info = {}
+    rt = ls.get_current_run_tree()
+    assert rt is not None
     for _ in range(max_num_turns):
         new_state = agent.invoke({"messages": [next_message]}, config)
         env_response = env.step(new_state["messages"])
