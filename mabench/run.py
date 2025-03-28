@@ -100,14 +100,6 @@ def run(
             @ls.traceable(name="Run Experiment")
             def _run(idx: int, agent) -> EnvRunResult:
                 rt = ls.get_current_run_tree()
-                assert rt is not None
-                the_agent = agent
-                if args.remote:
-                    the_agent = RemoteGraph(
-                        "graphs",
-                        url="http://localhost:2024",
-                        headers=rt.to_headers(),
-                    )
                 rt.metadata.update(vars(args))
                 rt.metadata["task_index"] = idx
                 rt.metadata["experiment_path"] = str(ckpt_path)
@@ -124,7 +116,7 @@ def run(
                 print(f"Running task {idx}")
                 try:
                     res = solve(
-                        the_agent,
+                        agent,
                         env=isolated_env,
                         args=args,
                         task_index=idx,
@@ -181,7 +173,10 @@ def run(
                             EnvRunResult(
                                 task_id=idx,
                                 reward=0.0,
-                                info={"error": str(e), "traceback": traceback.format_exc()},
+                                info={
+                                    "error": str(e),
+                                    "traceback": traceback.format_exc(),
+                                },
                                 traj=[],
                                 trial=idx,
                             )
@@ -344,18 +339,31 @@ def solve(
     task_index: Optional[int] = None,
     max_num_turns: int = 30,
 ) -> SolveResult:
+    rt = ls.get_current_run_tree()
+    assert rt is not None
+    if args.remote:
+        agent = agent.copy(
+            {
+                "headers": rt.to_headers(),
+                "client": None,
+                "sync_client": None,
+                "url": "http://localhost:2024",
+            }
+        )
     config = {
         "configurable": {
             "thread_id": str(uuid.uuid4()),
             "agent_strategy": args.agent_strategy,
             "user_model": args.user_model,
+            "model": args.model,
             "task_split": args.task_split,
+            "task_index": task_index,
             "n_distractors": args.n_distractors,
         }
     }
-    response = env.reset(task_index=task_index)
+    reset_response = env.reset(task_index=task_index)
     reward = 0.0
-    next_message = {"role": "user", "content": response.observation}
+    next_message = {"role": "user", "content": reset_response.observation}
     info = {}
     rt = ls.get_current_run_tree()
     assert rt is not None
