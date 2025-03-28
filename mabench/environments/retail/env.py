@@ -7,7 +7,7 @@ from mabench.environments.retail.tools import ALL_TOOLS
 from mabench.environments.retail.wiki import WIKI
 from typing import Optional, Union
 from mabench.environments.user import UserStrategy
-from typing import Callable
+from typing import Callable, Any
 
 
 class MockRetailDomainEnv(Env):
@@ -20,7 +20,10 @@ class MockRetailDomainEnv(Env):
         user_provider: Optional[str] = None,
         task_split: str = "test",
         task_index: Optional[int] = None,
+        wrap_index: bool = False,
+        **kwargs: Any,
     ):
+        print("TASK SPLIT", task_split)
         match task_split:
             case "test":
                 from mabench.environments.retail.tasks_test import TASKS_TEST as tasks
@@ -40,6 +43,8 @@ class MockRetailDomainEnv(Env):
             user_model=user_model,
             user_provider=user_provider,
             task_index=task_index,
+            wrap_index=wrap_index,
+            **kwargs,
         )
         self.terminate_tools = ["transfer_to_human_agents"]
 

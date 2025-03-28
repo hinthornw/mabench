@@ -1,10 +1,12 @@
 from langchain.chat_models import init_chat_model
+from langgraph.prebuilt import create_react_agent
 
-import argparse
 
 from mabench.environments import EnvProtocol
 from langgraph.checkpoint.memory import InMemorySaver
 from mabench.agents.supervisor import create_supervisor
+
+from langgraph_swarm import create_handoff_tool, create_swarm
 
 
 def create_single_agent(
@@ -34,7 +36,6 @@ Try to be helpful and always follow the policy."""  # noqa: E501
 
 
 def create_hierarchy(env: EnvProtocol, model: str):
-
     environments = env.environments
     checkpointer = InMemorySaver()
     agents = []
@@ -69,6 +70,57 @@ Use all resources available to enable a successful interaction."""
     return workflow.compile(checkpointer=checkpointer, name="Support Supervisor")
 
 
+def create_full_swarm(env: EnvProtocol, model: str):
+    environments = env.environments
+    checkpointer = InMemorySaver()
+    agents = []
+
+    def get_name(env):
+        return f"{env.name}_agent".lower().replace(" ", "_").strip()
+
+    handoff_tools = {}
+    for environment in environments:
+        name = get_name(environment)
+        handoff_tools[name] = create_handoff_tool(
+            agent_name=name,
+            description=f"Transfer to {name}, who can help with issues related to {environment.name}",
+        )
+    router_name = "triage_agent"
+    handoff_tools[router_name] = create_handoff_tool(
+        agent_name=router_name,
+        description="Transfer back up to the top-level triage agent, who can help re-route tasks if "
+        "the user switches topics to a domain not covered by you or a similar agent.",
+    )
+    for environment in environments:
+        name = get_name(environment)
+        this_handoffs = [t for a, t in handoff_tools.items() if a != name]
+        agents.append(
+            create_single_agent(
+                environment.wiki,
+                model,
+                list(environment.tools_map.values()) + this_handoffs,
+                True,
+                name=name,
+            )
+        )
+    tools = [t for a, t in handoff_tools.items() if a != router_name]
+    first_line = create_react_agent(
+        init_chat_model(model).bind_tools(tools, parallel_tool_calls=False),
+        tools=tools,
+        prompt=(
+            """You are a customer support agent tasked with helping users by delegating work to other agents.
+
+# Instructions
+
+Act as the initial agent, triaging and routing work to the appropriate agent to satisfy the user's demands.
+If transferring, transfer only to one agent."""
+        ),
+        name=router_name,
+    )
+    swarm = create_swarm([first_line, *agents], default_active_agent=router_name)
+    return swarm.compile(checkpointer=checkpointer, name="Support Swarm")
+
+
 def agent_factory(env: EnvProtocol, agent_strategy: str, model: str):
     if isinstance(env, str):
         raise ValueError("Environment must be an EnvProtocol, not a string")
@@ -84,7 +136,6 @@ def agent_factory(env: EnvProtocol, agent_strategy: str, model: str):
     elif agent_strategy == "supervisor":
         return create_hierarchy(env, model)
     elif agent_strategy == "swarm":
-        raise NotImplementedError(f"Agent strategy {agent_strategy} not implemented")
-
+        return create_full_swarm(env, model)
     else:
         raise ValueError(f"Unknown agent strategy: {agent_strategy}")

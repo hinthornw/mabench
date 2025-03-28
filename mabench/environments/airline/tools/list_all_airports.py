@@ -6,10 +6,10 @@ import json
 def list_all_airports() -> str:
     """
     List all airports and their cities.
-    
+
     Args:
         None
-        
+
     Returns:
         A JSON string mapping airport codes to city names.
     """

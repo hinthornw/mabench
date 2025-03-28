@@ -437,9 +437,7 @@ TASKS_TEST = [
                     "zip": "78712",
                 },
             ),
-            Action(
-                name="get_user_details", kwargs={"user_id": "fatima_johnson_7581"}
-            ),
+            Action(name="get_user_details", kwargs={"user_id": "fatima_johnson_7581"}),
             Action(name="get_order_details", kwargs={"order_id": "#W9389413"}),
             Action(name="get_order_details", kwargs={"order_id": "#W8665881"}),
             Action(name="get_order_details", kwargs={"order_id": "#W5199551"}),
@@ -469,9 +467,7 @@ TASKS_TEST = [
                     "zip": "78712",
                 },
             ),
-            Action(
-                name="get_user_details", kwargs={"user_id": "fatima_johnson_7581"}
-            ),
+            Action(name="get_user_details", kwargs={"user_id": "fatima_johnson_7581"}),
             Action(name="get_order_details", kwargs={"order_id": "#W5199551"}),
             Action(name="get_order_details", kwargs={"order_id": "#W8665881"}),
             Action(name="get_order_details", kwargs={"order_id": "#W9389413"}),
@@ -510,9 +506,7 @@ TASKS_TEST = [
                     "zip": "78712",
                 },
             ),
-            Action(
-                name="get_user_details", kwargs={"user_id": "fatima_johnson_7581"}
-            ),
+            Action(name="get_user_details", kwargs={"user_id": "fatima_johnson_7581"}),
             Action(name="get_order_details", kwargs={"order_id": "#W5199551"}),
             Action(name="get_order_details", kwargs={"order_id": "#W8665881"}),
             Action(name="get_order_details", kwargs={"order_id": "#W9389413"}),
@@ -729,9 +723,7 @@ TASKS_TEST = [
                     "zip": "98193",
                 },
             ),
-            Action(
-                name="get_user_details", kwargs={"user_id": "sofia_hernandez_5364"}
-            ),
+            Action(name="get_user_details", kwargs={"user_id": "sofia_hernandez_5364"}),
             Action(name="get_order_details", kwargs={"order_id": "#W3561391"}),
             Action(name="get_order_details", kwargs={"order_id": "#W6876713"}),
             Action(name="get_order_details", kwargs={"order_id": "#W9609649"}),
@@ -1195,9 +1187,7 @@ TASKS_TEST = [
                     "zip": "46236",
                 },
             ),
-            Action(
-                name="get_user_details", kwargs={"user_id": "daiki_sanchez_3253"}
-            ),
+            Action(name="get_user_details", kwargs={"user_id": "daiki_sanchez_3253"}),
             Action(name="get_order_details", kwargs={"order_id": "#W9348897"}),
             Action(name="get_product_details", kwargs={"product_id": "3377618313"}),
             Action(name="get_product_details", kwargs={"product_id": "9743693396"}),
@@ -1233,9 +1223,7 @@ TASKS_TEST = [
                     "zip": "46236",
                 },
             ),
-            Action(
-                name="get_user_details", kwargs={"user_id": "daiki_sanchez_3253"}
-            ),
+            Action(name="get_user_details", kwargs={"user_id": "daiki_sanchez_3253"}),
             Action(name="get_order_details", kwargs={"order_id": "#W9348897"}),
             Action(name="get_product_details", kwargs={"product_id": "3377618313"}),
             Action(name="get_product_details", kwargs={"product_id": "9743693396"}),
@@ -1271,9 +1259,7 @@ TASKS_TEST = [
                     "zip": "46236",
                 },
             ),
-            Action(
-                name="get_user_details", kwargs={"user_id": "daiki_sanchez_3253"}
-            ),
+            Action(name="get_user_details", kwargs={"user_id": "daiki_sanchez_3253"}),
             Action(name="get_order_details", kwargs={"order_id": "#W9348897"}),
             Action(name="get_product_details", kwargs={"product_id": "3377618313"}),
             Action(name="get_product_details", kwargs={"product_id": "9743693396"}),
@@ -1312,9 +1298,7 @@ TASKS_TEST = [
                     "zip": "32169",
                 },
             ),
-            Action(
-                name="get_user_details", kwargs={"user_id": "fatima_taylor_3452"}
-            ),
+            Action(name="get_user_details", kwargs={"user_id": "fatima_taylor_3452"}),
             Action(name="get_order_details", kwargs={"order_id": "#W5285031"}),
             Action(
                 name="modify_user_address",
@@ -1342,9 +1326,7 @@ TASKS_TEST = [
                 name="find_user_id_by_email",
                 kwargs={"email": "isabella.lopez3271@example.com"},
             ),
-            Action(
-                name="get_user_details", kwargs={"user_id": "isabella_lopez_6490"}
-            ),
+            Action(name="get_user_details", kwargs={"user_id": "isabella_lopez_6490"}),
             Action(name="get_order_details", kwargs={"order_id": "#W4923227"}),
             Action(
                 name="modify_pending_order_payment",
@@ -1646,9 +1628,7 @@ TASKS_TEST = [
                     "zip": "80273",
                 },
             ),
-            Action(
-                name="get_user_details", kwargs={"user_id": "daiki_johnson_9523"}
-            ),
+            Action(name="get_user_details", kwargs={"user_id": "daiki_johnson_9523"}),
             Action(name="get_order_details", kwargs={"order_id": "#W1436802"}),
             Action(name="get_order_details", kwargs={"order_id": "#W5282037"}),
             Action(name="get_order_details", kwargs={"order_id": "#W9502127"}),
@@ -1676,9 +1656,7 @@ TASKS_TEST = [
                     "zip": "19031",
                 },
             ),
-            Action(
-                name="get_user_details", kwargs={"user_id": "aarav_anderson_8794"}
-            ),
+            Action(name="get_user_details", kwargs={"user_id": "aarav_anderson_8794"}),
             Action(name="get_order_details", kwargs={"order_id": "#W4316152"}),
             Action(name="get_order_details", kwargs={"order_id": "#W9311069"}),
             Action(name="get_order_details", kwargs={"order_id": "#W9300146"}),
@@ -1894,9 +1872,7 @@ TASKS_TEST = [
                     "zip": "92133",
                 },
             ),
-            Action(
-                name="get_user_details", kwargs={"user_id": "ivan_hernandez_6923"}
-            ),
+            Action(name="get_user_details", kwargs={"user_id": "ivan_hernandez_6923"}),
             Action(name="get_order_details", kwargs={"order_id": "#W5838674"}),
             Action(name="get_order_details", kwargs={"order_id": "#W4284542"}),
             Action(name="get_order_details", kwargs={"order_id": "#W2782744"}),
@@ -1933,9 +1909,7 @@ TASKS_TEST = [
                     "zip": "92133",
                 },
             ),
-            Action(
-                name="get_user_details", kwargs={"user_id": "ivan_hernandez_6923"}
-            ),
+            Action(name="get_user_details", kwargs={"user_id": "ivan_hernandez_6923"}),
             Action(name="get_order_details", kwargs={"order_id": "#W5838674"}),
             Action(name="get_product_details", kwargs={"product_id": "4354588079"}),
             Action(name="get_product_details", kwargs={"product_id": "4760268021"}),
@@ -2107,9 +2081,7 @@ TASKS_TEST = [
                     "zip": "60623",
                 },
             ),
-            Action(
-                name="get_user_details", kwargs={"user_id": "james_sanchez_3954"}
-            ),
+            Action(name="get_user_details", kwargs={"user_id": "james_sanchez_3954"}),
             Action(name="get_order_details", kwargs={"order_id": "#W7464385"}),
             Action(name="get_order_details", kwargs={"order_id": "#W8499625"}),
             Action(name="get_order_details", kwargs={"order_id": "#W1279004"}),

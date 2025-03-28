@@ -8,11 +8,11 @@ from mabench.environments.user import UserStrategy
 
 def find_products(query: str, category: Optional[str] = None) -> List[Dict[str, Any]]:
     """Search for home improvement products based on query and optional category.
-    
+
     Args:
         query: Search term
         category: Optional category filter (e.g., 'flooring', 'plumbing', 'electrical')
-        
+
     Returns:
         List of matching products with details and availability
     """
@@ -21,24 +21,26 @@ def find_products(query: str, category: Optional[str] = None) -> List[Dict[str, 
 
 def get_product_details(product_id: str) -> Dict[str, Any]:
     """Get detailed information about a specific product.
-    
+
     Args:
         product_id: Product ID
-        
+
     Returns:
         Product details including specifications, dimensions, price, and availability
     """
     pass
 
 
-def check_product_availability(product_id: str, store_id: Optional[str] = None, zip_code: Optional[str] = None) -> Dict[str, Any]:
+def check_product_availability(
+    product_id: str, store_id: Optional[str] = None, zip_code: Optional[str] = None
+) -> Dict[str, Any]:
     """Check if a product is available in a store or deliverable to a location.
-    
+
     Args:
         product_id: Product ID
         store_id: Optional store ID to check in-store availability
         zip_code: Optional ZIP code to check delivery availability
-        
+
     Returns:
         Availability information including stock status and delivery options
     """
@@ -47,10 +49,10 @@ def check_product_availability(product_id: str, store_id: Optional[str] = None, 
 
 def find_nearest_stores(zip_code: str) -> List[Dict[str, Any]]:
     """Find the nearest home improvement stores to a location.
-    
+
     Args:
         zip_code: ZIP code to search from
-        
+
     Returns:
         List of nearby stores with addresses, phone numbers, and hours
     """
@@ -59,10 +61,10 @@ def find_nearest_stores(zip_code: str) -> List[Dict[str, Any]]:
 
 def get_store_hours(store_id: str) -> Dict[str, Any]:
     """Get the operating hours for a specific store.
-    
+
     Args:
         store_id: Store ID
-        
+
     Returns:
         Operating hours for the store, including special holiday hours
     """
@@ -71,58 +73,76 @@ def get_store_hours(store_id: str) -> Dict[str, Any]:
 
 def get_installation_services(category: str) -> List[Dict[str, Any]]:
     """Get available installation services for a product category.
-    
+
     Args:
         category: Product category (e.g., 'flooring', 'appliances', 'windows')
-        
+
     Returns:
         List of available installation services with details and pricing
     """
     pass
 
 
-def schedule_installation(customer_id: str, product_id: str, preferred_date: str, preferred_time: str, address: str) -> Dict[str, Any]:
+def schedule_installation(
+    customer_id: str,
+    product_id: str,
+    preferred_date: str,
+    preferred_time: str,
+    address: str,
+) -> Dict[str, Any]:
     """Schedule an installation service for a product.
-    
+
     Args:
         customer_id: Customer's account ID
         product_id: Product ID to be installed
         preferred_date: Preferred installation date in YYYY-MM-DD format
         preferred_time: Preferred time slot (e.g., 'morning', 'afternoon')
         address: Installation address
-        
+
     Returns:
         Scheduled installation details including confirmation number
     """
     pass
 
 
-def schedule_measurement(customer_id: str, service_type: str, preferred_date: str, preferred_time: str, address: str) -> Dict[str, Any]:
+def schedule_measurement(
+    customer_id: str,
+    service_type: str,
+    preferred_date: str,
+    preferred_time: str,
+    address: str,
+) -> Dict[str, Any]:
     """Schedule an in-home measurement for custom products.
-    
+
     Args:
         customer_id: Customer's account ID
         service_type: Type of measurement (e.g., 'flooring', 'blinds', 'cabinets')
         preferred_date: Preferred date in YYYY-MM-DD format
         preferred_time: Preferred time slot (e.g., 'morning', 'afternoon')
         address: Measurement address
-        
+
     Returns:
         Scheduled measurement details including confirmation number
     """
     pass
 
 
-def schedule_consultation(customer_id: str, project_type: str, preferred_date: str, preferred_time: str, address: str) -> Dict[str, Any]:
+def schedule_consultation(
+    customer_id: str,
+    project_type: str,
+    preferred_date: str,
+    preferred_time: str,
+    address: str,
+) -> Dict[str, Any]:
     """Schedule an in-home consultation with a project specialist.
-    
+
     Args:
         customer_id: Customer's account ID
         project_type: Type of project (e.g., 'kitchen', 'bathroom', 'deck')
         preferred_date: Preferred date in YYYY-MM-DD format
         preferred_time: Preferred time slot (e.g., 'morning', 'afternoon')
         address: Consultation address
-        
+
     Returns:
         Scheduled consultation details including confirmation number
     """
@@ -131,24 +151,26 @@ def schedule_consultation(customer_id: str, project_type: str, preferred_date: s
 
 def get_appointment_status(appointment_id: str) -> Dict[str, Any]:
     """Check the status of a scheduled appointment (installation, measurement, or consultation).
-    
+
     Args:
         appointment_id: Appointment ID
-        
+
     Returns:
         Appointment status including date, time, service type, and current status
     """
     pass
 
 
-def reschedule_appointment(appointment_id: str, new_date: str, new_time: str) -> Dict[str, Any]:
+def reschedule_appointment(
+    appointment_id: str, new_date: str, new_time: str
+) -> Dict[str, Any]:
     """Reschedule an existing appointment.
-    
+
     Args:
         appointment_id: Appointment ID
         new_date: New date in YYYY-MM-DD format
         new_time: New time slot (e.g., 'morning', 'afternoon')
-        
+
     Returns:
         Updated appointment details
     """
@@ -157,24 +179,26 @@ def reschedule_appointment(appointment_id: str, new_date: str, new_time: str) ->
 
 def cancel_appointment(appointment_id: str) -> Dict[str, str]:
     """Cancel a scheduled appointment.
-    
+
     Args:
         appointment_id: Appointment ID
-        
+
     Returns:
         Cancellation confirmation
     """
     pass
 
 
-def create_custom_order(customer_id: str, category: str, specifications: Dict[str, Any]) -> Dict[str, Any]:
+def create_custom_order(
+    customer_id: str, category: str, specifications: Dict[str, Any]
+) -> Dict[str, Any]:
     """Create a custom order for made-to-measure products.
-    
+
     Args:
         customer_id: Customer's account ID
         category: Product category (e.g., 'blinds', 'cabinets', 'countertops')
         specifications: Product specifications including dimensions and materials
-        
+
     Returns:
         Created custom order details including order ID and estimated completion date
     """
@@ -183,10 +207,10 @@ def create_custom_order(customer_id: str, category: str, specifications: Dict[st
 
 def get_order_status(order_id: str) -> Dict[str, Any]:
     """Check the status of an order.
-    
+
     Args:
         order_id: Order ID
-        
+
     Returns:
         Order status including current stage, estimated completion, and delivery details
     """
@@ -195,24 +219,26 @@ def get_order_status(order_id: str) -> Dict[str, Any]:
 
 def get_warranty_information(product_id: str) -> Dict[str, Any]:
     """Get warranty information for a product.
-    
+
     Args:
         product_id: Product ID
-        
+
     Returns:
         Warranty details including coverage period and terms
     """
     pass
 
 
-def request_quote(customer_id: str, service_type: str, project_details: Dict[str, Any]) -> Dict[str, Any]:
+def request_quote(
+    customer_id: str, service_type: str, project_details: Dict[str, Any]
+) -> Dict[str, Any]:
     """Request a quote for installation or renovation services.
-    
+
     Args:
         customer_id: Customer's account ID
         service_type: Type of service (e.g., 'flooring installation', 'kitchen remodel')
         project_details: Details about the project including dimensions and requirements
-        
+
     Returns:
         Quote information including estimated cost and timeframe
     """
@@ -221,24 +247,26 @@ def request_quote(customer_id: str, service_type: str, project_details: Dict[str
 
 def get_diy_instructions(project_type: str) -> Dict[str, Any]:
     """Get step-by-step DIY instructions for common home improvement projects.
-    
+
     Args:
         project_type: Type of DIY project (e.g., 'paint room', 'install toilet')
-        
+
     Returns:
         DIY instructions including steps, tools needed, and difficulty level
     """
     pass
 
 
-def add_to_shopping_list(customer_id: str, product_id: str, quantity: int = 1) -> Dict[str, Any]:
+def add_to_shopping_list(
+    customer_id: str, product_id: str, quantity: int = 1
+) -> Dict[str, Any]:
     """Add a product to the customer's shopping list.
-    
+
     Args:
         customer_id: Customer's account ID
         product_id: Product ID to add
         quantity: Quantity to add (default: 1)
-        
+
     Returns:
         Updated shopping list information
     """
@@ -247,7 +275,7 @@ def add_to_shopping_list(customer_id: str, product_id: str, quantity: int = 1) -
 
 def transfer_to_specialist() -> Dict[str, str]:
     """Transfer the conversation to a home improvement specialist.
-    
+
     Returns:
         Status message of the transfer
     """
@@ -273,7 +301,7 @@ ALL_TOOLS = [
     request_quote,
     get_diy_instructions,
     add_to_shopping_list,
-    transfer_to_specialist
+    transfer_to_specialist,
 ]
 
 WIKI = """
@@ -366,7 +394,7 @@ RULES = [
     "The assistant should at most make one tool call at a time, and if the assistant makes a tool call, it does not respond to the customer at the same time.",
     "The assistant should never make specific recommendations for structural modifications that could affect home safety or integrity without professional consultation.",
     "The assistant should always clarify when DIY instructions are for informational purposes only and may require professional skills or permits.",
-    "The assistant should prioritize customer safety and recommend professional installation for complex or potentially dangerous projects."
+    "The assistant should prioritize customer safety and recommend professional installation for complex or potentially dangerous projects.",
 ]
 
 
@@ -380,8 +408,8 @@ class MockHomeImprovementEnv(Env):
         user_provider: Optional[str] = None,
         task_split: str = "test",
         task_index: Optional[int] = None,
+        **kwargs: Any,
     ):
-
         super().__init__(
             data_load_func=load_data,
             tools=ALL_TOOLS,
@@ -392,6 +420,7 @@ class MockHomeImprovementEnv(Env):
             user_model=user_model,
             user_provider=user_provider,
             task_index=task_index,
+            **kwargs,
         )
         self.terminate_tools = ["transfer_to_specialist"]
 

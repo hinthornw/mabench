@@ -7,10 +7,10 @@ from mabench.utils import get_data
 def get_user_details(user_id: str) -> str:
     """
     Get the details of a user.
-    
+
     Args:
         user_id: The user id, such as 'sara_doe_496'.
-        
+
     Returns:
         A JSON string containing the user details, or an error message if not found.
     """

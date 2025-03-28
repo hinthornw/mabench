@@ -2,7 +2,6 @@
 import langsmith as ls
 import uuid
 from tqdm import tqdm
-from urllib3.util import response
 from mabench.environments.base import Env
 import concurrent.futures
 from mabench.bench_types import (
@@ -27,6 +26,9 @@ from mabench.agents import agent_factory
 from mabench.environments.user import UserStrategy
 from langgraph.graph.state import CompiledStateGraph
 from langgraph.pregel.remote import RemoteGraph
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 def run(
@@ -43,6 +45,7 @@ def run(
         n_distractors=args.n_distractors,
     )
     if args.remote:
+        1 / 0
         agent = RemoteGraph("graphs", url="http://localhost:2024")
     else:
         agent = agent_factory(
@@ -342,6 +345,7 @@ def solve(
     rt = ls.get_current_run_tree()
     assert rt is not None
     if args.remote:
+        1 / 0
         agent = agent.copy(
             {
                 "headers": rt.to_headers(),

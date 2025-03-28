@@ -5,12 +5,13 @@ from mabench.environments.airline.rules import RULES
 from mabench.environments.airline.tools import ALL_TOOLS
 from mabench.environments.airline.wiki import WIKI
 from mabench.environments.base import Env
-from typing import Optional, Union, Callable
+from typing import Optional, Union, Callable, Any
 from mabench.environments.user import UserStrategy
 
 
 class MockAirlineDomainEnv(Env):
     name: str = "airline"
+
     def __init__(
         self,
         user_strategy: Union[str, UserStrategy] = UserStrategy.LLM,
@@ -18,6 +19,7 @@ class MockAirlineDomainEnv(Env):
         user_provider: Optional[str] = None,
         task_split: str = "test",
         task_index: Optional[int] = None,
+        **kwargs: Any,
     ):
         match task_split:
             case "test":
@@ -34,6 +36,7 @@ class MockAirlineDomainEnv(Env):
             user_model=user_model,
             user_provider=user_provider,
             task_index=task_index,
+            **kwargs,
         )
         self.terminate_tools = ["transfer_to_human_agents"]
 

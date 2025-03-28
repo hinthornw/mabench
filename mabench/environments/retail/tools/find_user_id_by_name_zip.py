@@ -3,21 +3,19 @@
 from mabench.utils import get_data
 
 
-def find_user_id_by_name_zip(
-    first_name: str, last_name: str, zip: str
-) -> str:
+def find_user_id_by_name_zip(first_name: str, last_name: str, zip: str) -> str:
     """
     Find user id by first name, last name, and zip code.
-    
+
     If the user is not found, the function will return an error message. By default,
     find user id by email, and only call this function if the user is not found by
     email or cannot remember email.
-    
+
     Args:
         first_name: The first name of the customer, such as 'John'.
         last_name: The last name of the customer, such as 'Doe'.
         zip: The zip code of the customer, such as '12345'.
-        
+
     Returns:
         The user ID if found, or an error message if not found.
     """

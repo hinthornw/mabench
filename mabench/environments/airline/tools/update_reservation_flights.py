@@ -14,7 +14,7 @@ def update_reservation_flights(
 ) -> str:
     """
     Update the flight information of a reservation.
-    
+
     Args:
         reservation_id: The reservation ID, such as 'ZFA04Y'.
         cabin: The cabin class, one of 'basic_economy', 'economy', or 'business'.
@@ -26,7 +26,7 @@ def update_reservation_flights(
                     'credit_card_7815826',
                    'gift_card_7815826',
                    'certificate_7815826'.
-        
+
     Returns:
         A JSON string representing the updated reservation or an error message.
     """
@@ -58,17 +58,13 @@ def update_reservation_flights(
             return f"Error: flight {flight_number} not found"
         flight_data = data["flights"][flight_number]
         if flight["date"] not in flight_data["dates"]:
-            return (
-                f"Error: flight {flight_number} not found on date {flight['date']}"
-            )
+            return f"Error: flight {flight_number} not found on date {flight['date']}"
         flight_date_data = flight_data["dates"][flight["date"]]
         if flight_date_data["status"] != "available":
             return (
                 f"Error: flight {flight_number} not available on date {flight['date']}"
             )
-        if flight_date_data["available_seats"][cabin] < len(
-            reservation["passengers"]
-        ):
+        if flight_date_data["available_seats"][cabin] < len(reservation["passengers"]):
             return f"Error: not enough seats on flight {flight_number}"
         flight["price"] = flight_date_data["prices"][cabin]
         flight["origin"] = flight_data["origin"]

@@ -13,11 +13,11 @@ def exchange_delivered_order_items(
 ) -> str:
     """
     Exchange items in a delivered order to new items of the same product type.
-    
+
     For a delivered order, return or exchange can be only done once by the agent.
     The agent needs to explain the exchange detail and ask for explicit user
     confirmation (yes/no) to proceed.
-    
+
     Args:
         order_id: The order id, such as '#W0000000'. Be careful there is a '#'
                  symbol at the beginning of the order id.
@@ -31,7 +31,7 @@ def exchange_delivered_order_items(
                           item price difference, such as 'gift_card_0000000' or
                           'credit_card_0000000'. These can be looked up from the
                           user or order details.
-        
+
     Returns:
         A JSON string containing the updated order details, or an error message.
     """
@@ -80,9 +80,7 @@ def exchange_delivered_order_items(
         payment_method["source"] == "gift_card"
         and payment_method["balance"] < diff_price
     ):
-        return (
-            "Error: insufficient gift card balance to pay for the price difference"
-        )
+        return "Error: insufficient gift card balance to pay for the price difference"
 
     # modify the order
     order["status"] = "exchange requested"

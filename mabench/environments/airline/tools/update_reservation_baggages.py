@@ -12,17 +12,17 @@ def update_reservation_baggages(
 ) -> str:
     """
     Update the baggage information of a reservation.
-    
+
     Args:
         reservation_id: The reservation ID, such as 'ZFA04Y'.
         total_baggages: The updated total number of baggage items included in the
                         reservation.
-        nonfree_baggages: The updated number of non-free baggage items included 
+        nonfree_baggages: The updated number of non-free baggage items included
                          in the reservation.
         payment_id: The payment id stored in user profile, such as
                    'credit_card_7815826', 'gift_card_7815826', or
                    'certificate_7815826'.
-        
+
     Returns:
         A JSON string representing the updated reservation or an error message.
     """

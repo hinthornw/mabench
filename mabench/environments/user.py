@@ -48,7 +48,7 @@ class LLMUserSimulationEnv(BaseUserSimulationEnv):
     def generate_next_message(self, messages: List[Dict[str, Any]]) -> str:
         res = self.model.invoke(messages)
         self.messages.append({"role": "assistant", "content": res.content})
-        self.total_cost += res.response_metadata['token_usage']['total_tokens']
+        self.total_cost += res.response_metadata["token_usage"]["total_tokens"]
         return res.content
 
     def build_system_prompt(self, instruction: Optional[str]) -> str:
@@ -118,7 +118,7 @@ User Response:
     def generate_next_message(self, messages: List[Dict[str, Any]]) -> str:
         res = self.model.invoke(messages)
         self.messages.append({"role": "assistant", "content": res.content})
-        self.total_cost += res.response_metadata['token_usage']['total_tokens']
+        self.total_cost += res.response_metadata["token_usage"]["total_tokens"]
         return self.parse_response(res.content)
 
     def reset(self, instruction: Optional[str] = None) -> str:
@@ -151,47 +151,6 @@ User Response:
         return self.total_cost
 
 
-class VerifyUserSimulationEnv(LLMUserSimulationEnv):
-    def __init__(self, model: str, provider: str, max_attempts: int = 3) -> None:
-        self.model = model
-        self.provider = provider
-        self.max_attempts = max_attempts
-        self.reset()
-
-    def generate_next_message(self, messages: List[Dict[str, Any]]) -> str:
-        attempts = 0
-        cur_message = None
-        while attempts < self.max_attempts:
-            res = completion(
-                model=self.model, custom_llm_provider=self.provider, messages=messages
-            )
-            cur_message = res.choices[0].message
-            self.total_cost = res._hidden_params["response_cost"]
-            if verify(self.model, self.provider, cur_message, messages):
-                self.messages.append(cur_message.model_dump())
-                return cur_message.content
-            attempts += 1
-        assert cur_message is not None
-        return cur_message.content
-
-    def reset(self, instruction: Optional[str] = None) -> str:
-        self.messages = [
-            {
-                "role": "system",
-                "content": self.build_system_prompt(instruction=instruction),
-            },
-            {"role": "user", "content": "Hi! How can I help you today?"},
-        ]
-        return self.generate_next_message(self.messages)
-
-    def step(self, content: str) -> str:
-        self.messages.append({"role": "user", "content": content})
-        return self.generate_next_message(self.messages)
-
-    def get_total_cost(self) -> float:
-        return self.total_cost
-
-
 def map_role_label(role: str) -> str:
     if role == "user":
         return "Customer"
@@ -199,112 +158,6 @@ def map_role_label(role: str) -> str:
         return "Agent"
     else:
         return role.capitalize()
-
-
-def verify(
-    model: str, provider: str, response: str, messages: List[Dict[str, Any]]
-) -> bool:
-    transcript = "\n".join(
-        [
-            f"{map_role_label(message['role'])}: {message['content']}"
-            for message in messages
-        ]
-    )
-    prompt = f"""You are a supervisor of the Agent in the conversation. You are given a Transcript of a conversation between a Customer and an Agent. The Customer has generated a Response, and you need to verify if it is satisfactory (true) or not (false).
-Your answer will be parsed, so do not include any other text than the classification (true or false).
-    
-# Transcript:
-{transcript}
-
-# Response:
-{response}
-
------
-
-Classification:"""
-    res = completion(
-        model=model,
-        custom_llm_provider=provider,
-        messages=[{"role": "user", "content": prompt}],
-    )
-    return "true" in res.choices[0].message.content.lower()
-
-
-def reflect(
-    model: str, provider: str, response: str, messages: List[Dict[str, Any]]
-) -> str:
-    transcript = "\n".join(
-        [
-            f"{map_role_label(message['role'])}: {message['content']}"
-            for message in messages
-        ]
-    )
-    prompt = f"""You are a supervisor of the Agent in the conversation. You are given a Transcript of a conversation between a (simulated) Customer and an Agent. The Customer generated a Response that was marked as unsatisfactory by you.
-You need to generate a Reflection on what went wrong in the conversation, and propose a new Response that should fix the issues.
-Your answer will be parsed, so do not include any other text than the classification (true or false).
-    
-# Transcript:
-{transcript}
-
-# Response:
-{response}
-
-# Format:
-
-Reflection:
-<the reflection>
-
-Response:
-<the response (this will be parsed and sent to the agent)>"""
-    res = completion(
-        model=model,
-        custom_llm_provider=provider,
-        messages=[{"role": "user", "content": prompt}],
-    )
-    _, response = res.choices[0].message.content.split("Response:")
-    return response.strip()
-
-
-class ReflectionUserSimulationEnv(LLMUserSimulationEnv):
-    def __init__(self, model: str, provider: str, max_attempts: int = 2) -> None:
-        self.model = model
-        self.provider = provider
-        self.max_attempts = max_attempts
-        self.reset()
-
-    def generate_next_message(self, messages: List[Dict[str, Any]]) -> str:
-        cur_messages = messages.copy()
-        initial_response = super().generate_next_message(cur_messages)
-        if verify(self.model, self.provider, initial_response, cur_messages):
-            return initial_response
-        attempts = 1
-        while attempts < self.max_attempts:
-            new_message = reflect(
-                self.model, self.provider, initial_response, cur_messages
-            )
-            cur_messages.append({"role": "user", "content": new_message})
-            new_response = super().generate_next_message(cur_messages)
-            if verify(self.model, self.provider, new_response, cur_messages):
-                return new_response
-            attempts += 1
-        return initial_response
-
-    def reset(self, instruction: Optional[str] = None) -> str:
-        self.messages = [
-            {
-                "role": "system",
-                "content": self.build_system_prompt(instruction=instruction),
-            },
-            {"role": "user", "content": "Hi! How can I help you today?"},
-        ]
-        return self.generate_next_message(self.messages)
-
-    def step(self, content: str) -> str:
-        self.messages.append({"role": "user", "content": content})
-        return self.generate_next_message(self.messages)
-
-    def get_total_cost(self) -> float:
-        return self.total_cost
 
 
 class UserStrategy(enum.Enum):
@@ -334,12 +187,4 @@ def load_user(
         if provider is None:
             raise ValueError("React user strategy requires a model provider")
         return ReactUserSimulationEnv(model=model, provider=provider)
-    elif user_strategy == UserStrategy.VERIFY:
-        if model is None:
-            raise ValueError("Verify user strategy requires a model")
-        return VerifyUserSimulationEnv(model=model, provider=provider)
-    elif user_strategy == UserStrategy.REFLECTION:
-        if model is None:
-            raise ValueError("Reflection user strategy requires a model")
-        return ReflectionUserSimulationEnv(model=model, provider=provider)
     raise ValueError(f"Unknown user strategy {user_strategy}")

@@ -4,17 +4,15 @@ import json
 from mabench.utils import get_data
 
 
-def search_onestop_flight(
-    origin: str, destination: str, date: str
-) -> str:
+def search_onestop_flight(origin: str, destination: str, date: str) -> str:
     """
     Search one-stop flights between two cities on a specific date.
-    
+
     Args:
         origin: The origin city airport in three letters, such as 'JFK'.
         destination: The destination city airport in three letters, such as 'LAX'.
         date: The date of the flight in the format 'YYYY-MM-DD', such as '2024-05-01'.
-        
+
     Returns:
         A JSON string containing the list of available one-stop flights.
     """
@@ -43,14 +41,10 @@ def search_onestop_flight(
                             flight1["dates"][date]["status"] == "available"
                             and flight2["dates"][date2]["status"] == "available"
                         ):
-                            result1 = {
-                                k: v for k, v in flight1.items() if k != "dates"
-                            }
+                            result1 = {k: v for k, v in flight1.items() if k != "dates"}
                             result1.update(flight1["dates"][date])
                             result1["date"] = date
-                            result2 = {
-                                k: v for k, v in flight2.items() if k != "dates"
-                            }
+                            result2 = {k: v for k, v in flight2.items() if k != "dates"}
                             result2.update(flight2["dates"][date])
                             result2["date"] = date2
                             results.append([result1, result2])

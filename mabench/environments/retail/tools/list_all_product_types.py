@@ -7,10 +7,10 @@ from mabench.utils import get_data
 def list_all_product_types() -> str:
     """
     List the name and product id of all product types.
-    
+
     Each product type has a variety of different items with unique item ids and options.
     There are only 50 product types in the store.
-        
+
     Returns:
         A JSON string containing the names and product IDs of all product types.
     """

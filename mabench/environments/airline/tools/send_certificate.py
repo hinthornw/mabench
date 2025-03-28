@@ -9,11 +9,11 @@ def send_certificate(
 ) -> str:
     """
     Send a certificate to a user.
-    
+
     Args:
         user_id: The ID of the user to book the reservation, such as 'sara_doe_496'.
         amount: Certificate amount to send.
-        
+
     Returns:
         A confirmation message or an error message.
     """
@@ -34,4 +34,3 @@ def send_certificate(
             }
             msg = f"Certificate {payment_id} added to user {user_id}"
             return f"{msg} with amount {amount}."
-

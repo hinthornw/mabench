@@ -1,16 +1,15 @@
 """Adapted from τ-bench https://arxiv.org/abs/2406.12045"""
 
 
-
 def calculate(expression: str) -> str:
     """
     Calculate the result of a mathematical expression.
-    
+
     Args:
         expression: The mathematical expression to calculate, such as '2 + 2'.
                    The expression can contain numbers, operators (+, -, *, /),
                    parentheses, and spaces.
-        
+
     Returns:
         The calculated result as a string, or an error message.
     """

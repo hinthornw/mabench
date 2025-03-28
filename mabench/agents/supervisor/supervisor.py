@@ -57,7 +57,8 @@ def _make_call_agent(
             **output,
             "messages": messages,
         }
-    def call_agent(state: dict) ->  dict:
+
+    def call_agent(state: dict) -> dict:
         # content = state["messages"][-2].tool_calls[0]["args"]["instructions"]
         output = agent.invoke(state)
         return _process_output(output)

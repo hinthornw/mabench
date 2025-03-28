@@ -7,10 +7,10 @@ from mabench.utils import get_data
 def cancel_reservation(reservation_id: str) -> str:
     """
     Cancel the whole reservation.
-    
+
     Args:
         reservation_id: The reservation ID, such as 'ZFA04Y'.
-        
+
     Returns:
         A JSON string representing the cancelled reservation or an error message.
     """

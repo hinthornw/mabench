@@ -19,6 +19,9 @@ from mabench.bench_types import (
     RESPOND_ACTION_NAME,
 )
 import langsmith as ls
+import logging
+
+logger = logging.getLogger(__name__)
 
 ToHashable = Union[
     str, int, float, Dict[str, "ToHashable"], List["ToHashable"], Set["ToHashable"]
@@ -77,8 +80,6 @@ class EnvProtocol(Protocol):
 
     def calculate_reward(self) -> RewardResult: ...
 
-    
-
 
 class Env(object):
     name: str
@@ -94,6 +95,7 @@ class Env(object):
         user_model: str,
         user_provider: Optional[str] = None,
         task_index: Optional[int] = None,
+        wrap_index: bool = False,
     ) -> None:
         super().__init__()
         self.data_load_func = data_load_func
@@ -102,12 +104,21 @@ class Env(object):
             tool.__name__: as_tool(tool) for tool in tools
         }
         self.terminate_tools = []
+        logger.error(f"Loaded {len(tasks)} tasks for env {self.name}")
         self.tasks = tasks
         if task_index is not None:
             self.task_index = task_index
         else:
+            logger.error(f"Huh randomizing? {len(tasks)}")
             self.task_index = random.randint(0, len(tasks))
-        self.task = tasks[self.task_index] if tasks else None
+        try:
+            ti = self.task_index % len(tasks) if wrap_index else self.task_index
+            self.task = tasks[ti] if tasks else None
+        except IndexError:
+            logger.error(
+                f"Invalid task index: {self.task_index}. Max index: {len(tasks)}"
+            )
+            raise
         self.wiki = wiki
         self.rules = rules
         self.user = load_user(
@@ -137,7 +148,7 @@ class Env(object):
     def step(self, action: Action | list) -> EnvResponse:
         if isinstance(action, Action):
             return self._step_action(action)
-        
+
         msg = action[-1]
         msg_content = msg.content if hasattr(msg, "content") else msg["content"]
         self.actions.append(
@@ -219,9 +230,25 @@ class Env(object):
                 # We compare side effects.
                 if not info.r_actions:
                     print("OH DIFFERENT", data_hash, gt_data_hash)
+                    expected_actions = "\n".join(
+                        [
+                            f"{action.name}: {action.kwargs}"
+                            for action in self.task.actions
+                            if action.name != RESPOND_ACTION_NAME
+                        ]
+                    )
+                    rt.client.create_feedback(
+                        rt.trace_id,
+                        key="action_state",
+                        score=0.0,
+                        comment=f"Expected actions:\n\n{expected_actions}",
+                    )
                     reward = 0.0
                 else:
                     print("OH SAME DB STATE", data_hash, gt_data_hash)
+                    rt.client.create_feedback(
+                        rt.trace_id, key="action_state", score=1.0
+                    )
                 rtgt.add_outputs(
                     {"info": info, "reward": reward, "gt_data_hash": gt_data_hash}
                 )
@@ -230,21 +257,41 @@ class Env(object):
                 # check outputs
                 r_outputs = 1.0
                 outputs = {}
+                comments = []
+                action_contents = [
+                    action.kwargs["content"]
+                    for action in self.actions
+                    if action.name == RESPOND_ACTION_NAME
+                ]
                 for output in self.task.outputs:
                     found = False
-                    for action in self.actions:
-                        if (
-                            action.name == RESPOND_ACTION_NAME
-                            and output.lower()
-                            in action.kwargs["content"].lower().replace(",", "")
-                        ):
+                    for action_content in action_contents:
+                        if output.lower() in action_content.lower().replace(",", ""):
                             found = True
                             break
                     outputs[output] = found
                     if not found:
+                        comments.append(f"Missing output: {output}")
                         r_outputs = 0.0
                         reward = 0.0
+                rt.client.create_feedback(
+                    rt.trace_id,
+                    key="output_state",
+                    score=r_outputs,
+                    comment="\n".join(comments)
+                    + "\n\n"
+                    + "In actions: "
+                    + "\n"
+                    + "\n".join(action_contents),
+                )
                 info = RewardOutputInfo(r_outputs=r_outputs, outputs=outputs)
+            else:
+                rt.client.create_feedback(
+                    rt.trace_id,
+                    key="output_state",
+                    score=None,
+                    comment="Output not required.",
+                )
 
             result = RewardResult(reward=reward, info=info, actions=actions)
             rt.add_outputs({"result": result})

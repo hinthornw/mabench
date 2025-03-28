@@ -8,10 +8,10 @@ from mabench.environments.user import UserStrategy
 
 def get_user_profile(user_id: str) -> Dict[str, Any]:
     """Get a user's financial profile information.
-    
+
     Args:
         user_id: User's account ID
-        
+
     Returns:
         User profile including account types, investment preferences, risk tolerance, and goals
     """
@@ -20,24 +20,26 @@ def get_user_profile(user_id: str) -> Dict[str, Any]:
 
 def get_account_summary(user_id: str) -> Dict[str, Any]:
     """Get summary of a user's accounts and balances.
-    
+
     Args:
         user_id: User's account ID
-        
+
     Returns:
         Summary of all accounts including type, balance, and performance
     """
     pass
 
 
-def get_account_transactions(account_id: str, start_date: str = None, end_date: str = None) -> List[Dict[str, Any]]:
+def get_account_transactions(
+    account_id: str, start_date: str = None, end_date: str = None
+) -> List[Dict[str, Any]]:
     """Get transactions for a specific account within a date range.
-    
+
     Args:
         account_id: Account ID
         start_date: Start date in YYYY-MM-DD format (default: 30 days ago)
         end_date: End date in YYYY-MM-DD format (default: today)
-        
+
     Returns:
         List of transactions with date, amount, category, and description
     """
@@ -46,51 +48,57 @@ def get_account_transactions(account_id: str, start_date: str = None, end_date: 
 
 def get_investment_portfolio(user_id: str) -> Dict[str, Any]:
     """Get a user's investment portfolio details.
-    
+
     Args:
         user_id: User's account ID
-        
+
     Returns:
         Portfolio details including asset allocation, holdings, and performance
     """
     pass
 
 
-def get_investment_recommendations(user_id: str, risk_level: Optional[str] = None) -> List[Dict[str, Any]]:
+def get_investment_recommendations(
+    user_id: str, risk_level: Optional[str] = None
+) -> List[Dict[str, Any]]:
     """Get personalized investment recommendations.
-    
+
     Args:
         user_id: User's account ID
         risk_level: Optional risk level override (conservative, moderate, aggressive)
-        
+
     Returns:
         List of recommended investments with rationale
     """
     pass
 
 
-def create_investment_plan(user_id: str, goal_name: str, target_amount: float, time_horizon: int) -> Dict[str, Any]:
+def create_investment_plan(
+    user_id: str, goal_name: str, target_amount: float, time_horizon: int
+) -> Dict[str, Any]:
     """Create a new investment plan for a specific financial goal.
-    
+
     Args:
         user_id: User's account ID
         goal_name: Name of the financial goal
         target_amount: Target amount to reach
         time_horizon: Time horizon in years
-        
+
     Returns:
         Created investment plan details
     """
     pass
 
 
-def check_retirement_readiness(user_id: str, retirement_age: Optional[int] = None) -> Dict[str, Any]:
+def check_retirement_readiness(
+    user_id: str, retirement_age: Optional[int] = None
+) -> Dict[str, Any]:
     """Check retirement readiness based on current savings and contributions.
-    
+
     Args:
         user_id: User's account ID
         retirement_age: Optional retirement age (default: from user profile)
-        
+
     Returns:
         Retirement readiness assessment and recommendations
     """
@@ -99,11 +107,11 @@ def check_retirement_readiness(user_id: str, retirement_age: Optional[int] = Non
 
 def analyze_cash_flow(user_id: str, months: int = 3) -> Dict[str, Any]:
     """Analyze income and expenses to provide cash flow insights.
-    
+
     Args:
         user_id: User's account ID
         months: Number of months to analyze (default: 3)
-        
+
     Returns:
         Cash flow analysis with income, expenses, and recommendations
     """
@@ -112,24 +120,26 @@ def analyze_cash_flow(user_id: str, months: int = 3) -> Dict[str, Any]:
 
 def get_budget_categories(user_id: str) -> List[Dict[str, Any]]:
     """Get a user's budget categories and limits.
-    
+
     Args:
         user_id: User's account ID
-        
+
     Returns:
         List of budget categories with spending limits and current usage
     """
     pass
 
 
-def update_budget_category(user_id: str, category_id: str, monthly_limit: float) -> Dict[str, Any]:
+def update_budget_category(
+    user_id: str, category_id: str, monthly_limit: float
+) -> Dict[str, Any]:
     """Update a budget category's monthly spending limit.
-    
+
     Args:
         user_id: User's account ID
         category_id: Budget category ID
         monthly_limit: New monthly spending limit
-        
+
     Returns:
         Updated budget category details
     """
@@ -138,52 +148,58 @@ def update_budget_category(user_id: str, category_id: str, monthly_limit: float)
 
 def get_financial_goals(user_id: str) -> List[Dict[str, Any]]:
     """Get a user's financial goals.
-    
+
     Args:
         user_id: User's account ID
-        
+
     Returns:
         List of financial goals with progress and timeline
     """
     pass
 
 
-def create_financial_goal(user_id: str, goal_name: str, target_amount: float, target_date: str) -> Dict[str, Any]:
+def create_financial_goal(
+    user_id: str, goal_name: str, target_amount: float, target_date: str
+) -> Dict[str, Any]:
     """Create a new financial goal.
-    
+
     Args:
         user_id: User's account ID
         goal_name: Name of the goal
         target_amount: Target amount to reach
         target_date: Target date in YYYY-MM-DD format
-        
+
     Returns:
         Created financial goal details
     """
     pass
 
 
-def calculate_loan_payment(loan_amount: float, interest_rate: float, term_years: int) -> Dict[str, Any]:
+def calculate_loan_payment(
+    loan_amount: float, interest_rate: float, term_years: int
+) -> Dict[str, Any]:
     """Calculate loan payment amounts and amortization schedule.
-    
+
     Args:
         loan_amount: Loan principal amount
         interest_rate: Annual interest rate (percentage)
         term_years: Loan term in years
-        
+
     Returns:
         Monthly payment amount and amortization details
     """
     pass
 
 
-def get_debt_payoff_strategy(user_id: str, strategy: str = "avalanche") -> Dict[str, Any]:
+def get_debt_payoff_strategy(
+    user_id: str, strategy: str = "avalanche"
+) -> Dict[str, Any]:
     """Get a debt payoff strategy based on user's current debts.
-    
+
     Args:
         user_id: User's account ID
         strategy: Payoff strategy, either "avalanche" (highest interest first) or "snowball" (smallest balance first)
-        
+
     Returns:
         Debt payoff plan with ordered list of debts and timeline
     """
@@ -192,11 +208,11 @@ def get_debt_payoff_strategy(user_id: str, strategy: str = "avalanche") -> Dict[
 
 def get_tax_summary(user_id: str, tax_year: Optional[int] = None) -> Dict[str, Any]:
     """Get a summary of tax information for a specific year.
-    
+
     Args:
         user_id: User's account ID
         tax_year: Tax year (default: current year)
-        
+
     Returns:
         Tax summary including income, deductions, and estimated tax liability
     """
@@ -205,11 +221,11 @@ def get_tax_summary(user_id: str, tax_year: Optional[int] = None) -> Dict[str, A
 
 def update_risk_profile(user_id: str, risk_tolerance: str) -> Dict[str, Any]:
     """Update a user's risk tolerance profile.
-    
+
     Args:
         user_id: User's account ID
         risk_tolerance: Risk tolerance level (conservative, moderate, aggressive)
-        
+
     Returns:
         Updated risk profile details
     """
@@ -218,7 +234,7 @@ def update_risk_profile(user_id: str, risk_tolerance: str) -> Dict[str, Any]:
 
 def get_market_outlook() -> Dict[str, Any]:
     """Get current market outlook and economic indicators.
-    
+
     Returns:
         Market analysis and key economic indicators
     """
@@ -227,24 +243,26 @@ def get_market_outlook() -> Dict[str, Any]:
 
 def get_education_resources(topic: str) -> List[Dict[str, Any]]:
     """Get educational resources on financial topics.
-    
+
     Args:
         topic: Financial topic (e.g., retirement, investing, budgeting)
-        
+
     Returns:
         List of educational resources with titles and descriptions
     """
     pass
 
 
-def schedule_advisor_meeting(user_id: str, preferred_date: str, preferred_time: str) -> Dict[str, Any]:
+def schedule_advisor_meeting(
+    user_id: str, preferred_date: str, preferred_time: str
+) -> Dict[str, Any]:
     """Schedule a meeting with a human financial advisor.
-    
+
     Args:
         user_id: User's account ID
         preferred_date: Preferred date in YYYY-MM-DD format
         preferred_time: Preferred time in HH:MM format
-        
+
     Returns:
         Scheduled meeting details
     """
@@ -253,7 +271,7 @@ def schedule_advisor_meeting(user_id: str, preferred_date: str, preferred_time: 
 
 def transfer_to_human_advisor() -> Dict[str, str]:
     """Transfer the conversation to a human financial advisor.
-    
+
     Returns:
         Status message of the transfer
     """
@@ -280,7 +298,7 @@ ALL_TOOLS = [
     get_market_outlook,
     get_education_resources,
     schedule_advisor_meeting,
-    transfer_to_human_advisor
+    transfer_to_human_advisor,
 ]
 
 WIKI = """
@@ -369,7 +387,7 @@ RULES = [
     "The advisor should at most make one tool call at a time, and if the advisor makes a tool call, it does not respond to the user at the same time.",
     "The advisor should never make specific investment recommendations for individual securities, funds, or market timing.",
     "The advisor should always clarify that its information is educational and not personalized financial advice.",
-    "The advisor should prioritize user privacy and security, never asking for credentials or sensitive account details."
+    "The advisor should prioritize user privacy and security, never asking for credentials or sensitive account details.",
 ]
 
 
@@ -383,8 +401,8 @@ class MockFinancialAdvisorEnv(Env):
         user_provider: Optional[str] = None,
         task_split: str = "test",
         task_index: Optional[int] = None,
+        **kwargs: Any,
     ):
-
         super().__init__(
             data_load_func=load_data,
             tools=ALL_TOOLS,
@@ -395,6 +413,7 @@ class MockFinancialAdvisorEnv(Env):
             user_model=user_model,
             user_provider=user_provider,
             task_index=task_index,
+            **kwargs,
         )
         self.terminate_tools = ["transfer_to_human_advisor"]
 

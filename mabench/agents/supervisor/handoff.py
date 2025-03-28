@@ -25,8 +25,7 @@ def _remove_non_handoff_tool_calls(
     # we need to remove tool calls that are not meant for this agent
     # to ensure that the resulting message history is valid
     if len(last_ai_message.tool_calls) > 1 and any(
-        tool_call["id"] == handoff_tool_id
-        for tool_call in last_ai_message.tool_calls
+        tool_call["id"] == handoff_tool_id for tool_call in last_ai_message.tool_calls
     ):
         content = last_ai_message.content
         if (

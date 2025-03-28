@@ -8,11 +8,11 @@ from mabench.environments.user import UserStrategy
 
 def search_tracks(query: str, limit: int = 10) -> List[Dict[str, Any]]:
     """Search for tracks on Spotify by name, artist, or album.
-    
+
     Args:
         query: Search query string
         limit: Maximum number of results to return (default: 10)
-        
+
     Returns:
         List of track objects with id, name, artist, album, and popularity
     """
@@ -21,25 +21,27 @@ def search_tracks(query: str, limit: int = 10) -> List[Dict[str, Any]]:
 
 def get_track_details(track_id: str) -> Dict[str, Any]:
     """Get detailed information about a specific track.
-    
+
     Args:
         track_id: Spotify track ID
-        
+
     Returns:
         Track details including audio features (tempo, key, danceability, etc.)
     """
     pass
 
 
-def create_playlist(user_id: str, name: str, description: str, public: bool = False) -> Dict[str, Any]:
+def create_playlist(
+    user_id: str, name: str, description: str, public: bool = False
+) -> Dict[str, Any]:
     """Create a new playlist for a user.
-    
+
     Args:
         user_id: User's Spotify ID
         name: Name of the playlist
         description: Description of the playlist
         public: Whether the playlist should be public (default: False)
-        
+
     Returns:
         Details of the created playlist including ID
     """
@@ -48,11 +50,11 @@ def create_playlist(user_id: str, name: str, description: str, public: bool = Fa
 
 def add_tracks_to_playlist(playlist_id: str, track_ids: List[str]) -> Dict[str, Any]:
     """Add tracks to an existing playlist.
-    
+
     Args:
         playlist_id: Spotify playlist ID
         track_ids: List of track IDs to add
-        
+
     Returns:
         Status of the operation
     """
@@ -61,10 +63,10 @@ def add_tracks_to_playlist(playlist_id: str, track_ids: List[str]) -> Dict[str, 
 
 def get_user_playlists(user_id: str) -> List[Dict[str, Any]]:
     """Get a list of the user's playlists.
-    
+
     Args:
         user_id: User's Spotify ID
-        
+
     Returns:
         List of playlist objects with id, name, and track count
     """
@@ -73,23 +75,25 @@ def get_user_playlists(user_id: str) -> List[Dict[str, Any]]:
 
 def get_playlist_tracks(playlist_id: str) -> List[Dict[str, Any]]:
     """Get the tracks in a playlist.
-    
+
     Args:
         playlist_id: Spotify playlist ID
-        
+
     Returns:
         List of track objects in the playlist
     """
     pass
 
 
-def get_recommendations(seed_tracks: List[str], limit: int = 20) -> List[Dict[str, Any]]:
+def get_recommendations(
+    seed_tracks: List[str], limit: int = 20
+) -> List[Dict[str, Any]]:
     """Get track recommendations based on seed tracks.
-    
+
     Args:
         seed_tracks: List of track IDs to use as seeds (max 5)
         limit: Maximum number of recommendations to return (default: 20)
-        
+
     Returns:
         List of recommended track objects
     """
@@ -98,11 +102,11 @@ def get_recommendations(seed_tracks: List[str], limit: int = 20) -> List[Dict[st
 
 def create_radio(track_id: str, duration_minutes: int = 60) -> Dict[str, Any]:
     """Create a radio station based on a track.
-    
+
     Args:
         track_id: Seed track ID
         duration_minutes: Duration of the radio in minutes (default: 60)
-        
+
     Returns:
         Radio session details including tracks
     """
@@ -111,37 +115,43 @@ def create_radio(track_id: str, duration_minutes: int = 60) -> Dict[str, Any]:
 
 def get_user_profile(user_id: str) -> Dict[str, Any]:
     """Get a user's Spotify profile information.
-    
+
     Args:
         user_id: User's Spotify ID
-        
+
     Returns:
         User profile details including subscription level and preferences
     """
     pass
 
 
-def get_user_top_tracks(user_id: str, time_range: str = "medium_term") -> List[Dict[str, Any]]:
+def get_user_top_tracks(
+    user_id: str, time_range: str = "medium_term"
+) -> List[Dict[str, Any]]:
     """Get a user's top tracks.
-    
+
     Args:
         user_id: User's Spotify ID
         time_range: Time range to consider (short_term, medium_term, long_term)
-        
+
     Returns:
         List of the user's most played tracks
     """
     pass
 
 
-def start_playback(device_id: str, context_uri: Optional[str] = None, track_ids: Optional[List[str]] = None) -> Dict[str, Any]:
+def start_playback(
+    device_id: str,
+    context_uri: Optional[str] = None,
+    track_ids: Optional[List[str]] = None,
+) -> Dict[str, Any]:
     """Start or resume playback on a device.
-    
+
     Args:
         device_id: ID of the device to play on
         context_uri: URI of album, artist, or playlist to play
         track_ids: List of track IDs to play (used if context_uri is None)
-        
+
     Returns:
         Status of the playback operation
     """
@@ -150,10 +160,10 @@ def start_playback(device_id: str, context_uri: Optional[str] = None, track_ids:
 
 def pause_playback(device_id: str) -> Dict[str, Any]:
     """Pause playback on a device.
-    
+
     Args:
         device_id: ID of the device
-        
+
     Returns:
         Status of the pause operation
     """
@@ -162,10 +172,10 @@ def pause_playback(device_id: str) -> Dict[str, Any]:
 
 def skip_to_next(device_id: str) -> Dict[str, Any]:
     """Skip to the next track in the queue.
-    
+
     Args:
         device_id: ID of the device
-        
+
     Returns:
         Status of the skip operation
     """
@@ -174,10 +184,10 @@ def skip_to_next(device_id: str) -> Dict[str, Any]:
 
 def skip_to_previous(device_id: str) -> Dict[str, Any]:
     """Skip to the previous track in the queue.
-    
+
     Args:
         device_id: ID of the device
-        
+
     Returns:
         Status of the skip operation
     """
@@ -186,24 +196,26 @@ def skip_to_previous(device_id: str) -> Dict[str, Any]:
 
 def get_available_devices(user_id: str) -> List[Dict[str, Any]]:
     """Get a list of the user's available devices.
-    
+
     Args:
         user_id: User's Spotify ID
-        
+
     Returns:
         List of available devices with their IDs and types
     """
     pass
 
 
-def create_mood_based_playlist(user_id: str, mood: str, name: str = None) -> Dict[str, Any]:
+def create_mood_based_playlist(
+    user_id: str, mood: str, name: str = None
+) -> Dict[str, Any]:
     """Create a playlist based on a specified mood.
-    
+
     Args:
         user_id: User's Spotify ID
         mood: Desired mood (e.g., 'happy', 'relaxed', 'energetic')
         name: Custom name for the playlist (default: None, will use mood name)
-        
+
     Returns:
         Created playlist details
     """
@@ -212,10 +224,10 @@ def create_mood_based_playlist(user_id: str, mood: str, name: str = None) -> Dic
 
 def get_artist_top_tracks(artist_id: str) -> List[Dict[str, Any]]:
     """Get an artist's top tracks.
-    
+
     Args:
         artist_id: Spotify artist ID
-        
+
     Returns:
         List of the artist's top tracks
     """
@@ -224,11 +236,11 @@ def get_artist_top_tracks(artist_id: str) -> List[Dict[str, Any]]:
 
 def queue_track(track_id: str, device_id: str) -> Dict[str, Any]:
     """Add a track to the playback queue.
-    
+
     Args:
         track_id: Spotify track ID
         device_id: ID of the device
-        
+
     Returns:
         Status of the queue operation
     """
@@ -237,11 +249,11 @@ def queue_track(track_id: str, device_id: str) -> Dict[str, Any]:
 
 def search_by_genre(genre: str, limit: int = 20) -> List[Dict[str, Any]]:
     """Search for tracks by genre.
-    
+
     Args:
         genre: Genre to search for
         limit: Maximum number of results to return (default: 20)
-        
+
     Returns:
         List of tracks matching the genre
     """
@@ -250,7 +262,7 @@ def search_by_genre(genre: str, limit: int = 20) -> List[Dict[str, Any]]:
 
 def transfer_to_human_dj() -> Dict[str, str]:
     """Transfer the conversation to a human DJ specialist.
-    
+
     Returns:
         Status message of the transfer
     """
@@ -277,7 +289,7 @@ ALL_TOOLS = [
     get_artist_top_tracks,
     queue_track,
     search_by_genre,
-    transfer_to_human_dj
+    transfer_to_human_dj,
 ]
 
 WIKI = """
@@ -364,7 +376,7 @@ RULES = [
     "The DJ should at most make one tool call at a time, and if the DJ makes a tool call, it does not respond to the user at the same time.",
     "The DJ should respect subscription limitations and inform Free users when a Premium feature is requested.",
     "The DJ should not provide any subjective opinions on artists' personal lives or controversies.",
-    "The DJ should prioritize user privacy and only access listening history with consent."
+    "The DJ should prioritize user privacy and only access listening history with consent.",
 ]
 
 
@@ -378,8 +390,8 @@ class MockSpotifyDomainEnv(Env):
         user_provider: Optional[str] = None,
         task_split: str = "test",
         task_index: Optional[int] = None,
+        **kwargs: Any,
     ):
-
         super().__init__(
             data_load_func=load_data,
             tools=ALL_TOOLS,
@@ -390,6 +402,7 @@ class MockSpotifyDomainEnv(Env):
             user_model=user_model,
             user_provider=user_provider,
             task_index=task_index,
+            **kwargs,
         )
         self.terminate_tools = ["transfer_to_human_dj"]
 

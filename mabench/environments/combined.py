@@ -1,7 +1,7 @@
 """Adapted from τ-bench https://arxiv.org/abs/2406.12045"""
 
 from mabench.environments.base import EnvProtocol
-from typing import Callable, Dict, Optional, Union
+from typing import Callable, Dict, Optional, Union, Any
 from mabench.environments.user import UserStrategy
 from mabench.bench_types import (
     Action,
@@ -22,6 +22,7 @@ class CombinedEnv(EnvProtocol):
         user_provider: Optional[str] = None,
         task_split: str = "test",
         task_index: Optional[int] = None,
+        **kwargs: Any,
     ):
         valid = (
             "spotify",
@@ -55,6 +56,7 @@ class CombinedEnv(EnvProtocol):
                         task_split,
                         user_provider,
                         task_index,
+                        wrap_index=True,
                     )
                     for env in environments
                 ]
@@ -127,9 +129,12 @@ class CombinedEnv(EnvProtocol):
         # Set the active environment based on the task_index
         if self.task_index in task_env_map:
             self.active_env_index = task_env_map[self.task_index]
+        else:
+            raise ValueError(f"Invalid task index: {self.task_index}")
 
         # Reset the active environment
         active_env = self._get_active_env()
+        print(f"Resetting active environment: {active_env.name}")
 
         # Find the equivalent task in the active environment
         task = self.tasks[self.task_index]

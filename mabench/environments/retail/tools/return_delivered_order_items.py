@@ -10,11 +10,11 @@ def return_delivered_order_items(
 ) -> str:
     """
     Return some items of a delivered order.
-    
+
     The order status will be changed to 'return requested'. The agent needs to explain
     the return detail and ask for explicit user confirmation (yes/no) to proceed.
     The user will receive follow-up email for how and where to return the item.
-    
+
     Args:
         order_id: The order id, such as '#W0000000'. Be careful there is a '#' symbol
                  at the beginning of the order id.
@@ -24,7 +24,7 @@ def return_delivered_order_items(
                           price difference, such as 'gift_card_0000000' or
                           'credit_card_0000000'. These can be looked up from the user
                           or order details.
-        
+
     Returns:
         A JSON string containing the updated order details, or an error message.
     """

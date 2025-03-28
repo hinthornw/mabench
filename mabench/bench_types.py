@@ -24,7 +24,10 @@ class Task(BaseModel):
 
     @property
     def example_outputs(self):
-        return {"outputs": self.outputs, "actions": [act.model_dump(mode="json") for act in self.actions]}
+        return {
+            "outputs": self.outputs,
+            "actions": [act.model_dump(mode="json") for act in self.actions],
+        }
 
 
 class RewardOutputInfo(BaseModel):

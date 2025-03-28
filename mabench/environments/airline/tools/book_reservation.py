@@ -5,6 +5,7 @@ from copy import deepcopy
 from typing import Any, Dict, List
 from mabench.utils import get_data
 
+
 def book_reservation(
     user_id: str,
     origin: str,

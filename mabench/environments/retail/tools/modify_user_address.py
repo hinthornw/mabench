@@ -15,10 +15,10 @@ def modify_user_address(
 ) -> str:
     """
     Modify the default address of a user.
-    
+
     The agent needs to explain the modification detail and ask for explicit user
     confirmation (yes/no) to proceed.
-    
+
     Args:
         user_id: The user id, such as 'sara_doe_496'.
         address1: The first line of the address, such as '123 Main St'.
@@ -27,7 +27,7 @@ def modify_user_address(
         state: The province, such as 'CA'.
         country: The country, such as 'USA'.
         zip: The zip code, such as '12345'.
-        
+
     Returns:
         A JSON string containing the updated user details, or an error message.
     """

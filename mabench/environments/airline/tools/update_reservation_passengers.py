@@ -11,14 +11,14 @@ def update_reservation_passengers(
 ) -> str:
     """
     Update the passenger information of a reservation.
-    
+
     Args:
         reservation_id: The reservation ID, such as 'ZFA04Y'.
         passengers: An array of objects containing details about each passenger.
                    Each object should have 'first_name', 'last_name', and
                    'dob' properties.
                    The date of birth should be in the format 'YYYY-MM-DD'.
-        
+
     Returns:
         A JSON string representing the updated reservation or an error message.
     """

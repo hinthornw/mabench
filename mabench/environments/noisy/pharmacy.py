@@ -6,14 +6,16 @@ from typing import Dict, List, Optional, Union, Any, Callable
 from mabench.environments.user import UserStrategy
 
 
-def verify_patient(patient_id: str = None, date_of_birth: str = None, phone: str = None) -> Dict[str, Any]:
+def verify_patient(
+    patient_id: str = None, date_of_birth: str = None, phone: str = None
+) -> Dict[str, Any]:
     """Verify a patient's identity using one or more identifiers.
-    
+
     Args:
         patient_id: Patient's account ID (optional)
         date_of_birth: Patient's date of birth in YYYY-MM-DD format (optional)
         phone: Patient's phone number (optional)
-        
+
     Returns:
         Patient profile including verified status and account information
     """
@@ -22,10 +24,10 @@ def verify_patient(patient_id: str = None, date_of_birth: str = None, phone: str
 
 def find_medications(query: str) -> List[Dict[str, Any]]:
     """Search for medications based on name, generic name, or condition.
-    
+
     Args:
         query: Search term (medication name, generic name, or medical condition)
-        
+
     Returns:
         List of matching medications with basic information
     """
@@ -34,10 +36,10 @@ def find_medications(query: str) -> List[Dict[str, Any]]:
 
 def get_medication_details(medication_id: str) -> Dict[str, Any]:
     """Get detailed information about a specific medication.
-    
+
     Args:
         medication_id: Medication ID
-        
+
     Returns:
         Medication details including usage, side effects, interactions, and warnings
     """
@@ -46,10 +48,10 @@ def get_medication_details(medication_id: str) -> Dict[str, Any]:
 
 def check_medication_interactions(medication_ids: List[str]) -> Dict[str, Any]:
     """Check for potential interactions between multiple medications.
-    
+
     Args:
         medication_ids: List of medication IDs to check for interactions
-        
+
     Returns:
         Interaction information including severity and recommendations
     """
@@ -58,80 +60,90 @@ def check_medication_interactions(medication_ids: List[str]) -> Dict[str, Any]:
 
 def get_patient_prescriptions(patient_id: str) -> List[Dict[str, Any]]:
     """Get a list of active prescriptions for a patient.
-    
+
     Args:
         patient_id: Patient's account ID
-        
+
     Returns:
         List of active prescriptions with details and refill status
     """
     pass
 
 
-def request_prescription_refill(patient_id: str, prescription_id: str, pickup_preference: str = "in-store") -> Dict[str, Any]:
+def request_prescription_refill(
+    patient_id: str, prescription_id: str, pickup_preference: str = "in-store"
+) -> Dict[str, Any]:
     """Request a refill for an existing prescription.
-    
+
     Args:
         patient_id: Patient's account ID
         prescription_id: Prescription ID to refill
         pickup_preference: Pickup method (in-store, drive-thru, delivery, mail)
-        
+
     Returns:
         Refill request confirmation and status
     """
     pass
 
 
-def transfer_prescription(patient_id: str, prescription_details: Dict[str, str], from_pharmacy: Dict[str, str]) -> Dict[str, Any]:
+def transfer_prescription(
+    patient_id: str, prescription_details: Dict[str, str], from_pharmacy: Dict[str, str]
+) -> Dict[str, Any]:
     """Transfer a prescription from another pharmacy.
-    
+
     Args:
         patient_id: Patient's account ID
         prescription_details: Details of the prescription (name, dosage, prescriber)
         from_pharmacy: Information about the source pharmacy (name, phone, address)
-        
+
     Returns:
         Transfer request confirmation and next steps
     """
     pass
 
 
-def check_insurance_coverage(patient_id: str, medication_id: str = None, insurance_id: str = None) -> Dict[str, Any]:
+def check_insurance_coverage(
+    patient_id: str, medication_id: str = None, insurance_id: str = None
+) -> Dict[str, Any]:
     """Check insurance coverage for a patient or specific medication.
-    
+
     Args:
         patient_id: Patient's account ID
         medication_id: Optional specific medication ID to check coverage
         insurance_id: Optional insurance ID if different from patient's default
-        
+
     Returns:
         Insurance coverage details including copay and restrictions
     """
     pass
 
 
-def update_insurance_information(patient_id: str, insurance_details: Dict[str, str]) -> Dict[str, Any]:
+def update_insurance_information(
+    patient_id: str, insurance_details: Dict[str, str]
+) -> Dict[str, Any]:
     """Update a patient's insurance information.
-    
+
     Args:
         patient_id: Patient's account ID
         insurance_details: New insurance details (provider, ID, group number, etc.)
-        
+
     Returns:
         Updated insurance information confirmation
     """
     pass
 
 
-def schedule_vaccination(patient_id: str, vaccine_type: str, preferred_date: str, preferred_time: str) -> Dict[str, Any]:
+def schedule_vaccination(
+    patient_id: str, vaccine_type: str, preferred_date: str, preferred_time: str
+) -> Dict[str, Any]:
     """Schedule a vaccination appointment.
-    
+
     Args:
         patient_id: Patient's account ID
         vaccine_type: Type of vaccine (flu, covid, etc.)
         preferred_date: Preferred date in YYYY-MM-DD format
         preferred_time: Preferred time slot
-        
+
     Returns:
         Scheduled vaccination details including confirmation number
     """
@@ -140,11 +152,11 @@ def schedule_vaccination(patient_id: str, vaccine_type: str, preferred_date: str
 
 def check_vaccine_eligibility(patient_id: str, vaccine_type: str) -> Dict[str, Any]:
     """Check if a patient is eligible for a specific vaccine.
-    
+
     Args:
         patient_id: Patient's account ID
         vaccine_type: Type of vaccine to check eligibility for
-        
+
     Returns:
         Eligibility information including requirements and restrictions
     """
@@ -153,10 +165,10 @@ def check_vaccine_eligibility(patient_id: str, vaccine_type: str) -> Dict[str, A
 
 def find_nearest_pharmacies(zip_code: str) -> List[Dict[str, Any]]:
     """Find the nearest pharmacy locations to a ZIP code.
-    
+
     Args:
         zip_code: ZIP code to search from
-        
+
     Returns:
         List of nearby pharmacies with addresses, phone numbers, and hours
     """
@@ -165,24 +177,26 @@ def find_nearest_pharmacies(zip_code: str) -> List[Dict[str, Any]]:
 
 def get_pharmacy_hours(store_id: str) -> Dict[str, Any]:
     """Get operating hours for a specific pharmacy location.
-    
+
     Args:
         store_id: Pharmacy store ID
-        
+
     Returns:
         Operating hours including pharmacy, drive-thru, and clinic hours
     """
     pass
 
 
-def check_medication_availability(medication_id: str, store_id: str = None, zip_code: str = None) -> Dict[str, Any]:
+def check_medication_availability(
+    medication_id: str, store_id: str = None, zip_code: str = None
+) -> Dict[str, Any]:
     """Check if a medication is available at a specific store or location.
-    
+
     Args:
         medication_id: Medication ID
         store_id: Optional store ID to check availability
         zip_code: Optional ZIP code to check nearby stores
-        
+
     Returns:
         Availability information including stock status and alternatives
     """
@@ -191,24 +205,26 @@ def check_medication_availability(medication_id: str, store_id: str = None, zip_
 
 def find_generic_alternatives(medication_id: str) -> List[Dict[str, Any]]:
     """Find generic alternatives for a brand-name medication.
-    
+
     Args:
         medication_id: Medication ID (typically a brand-name drug)
-        
+
     Returns:
         List of generic alternatives with price comparisons
     """
     pass
 
 
-def get_medication_price(medication_id: str, insurance_id: Optional[str] = None, quantity: int = 30) -> Dict[str, Any]:
+def get_medication_price(
+    medication_id: str, insurance_id: Optional[str] = None, quantity: int = 30
+) -> Dict[str, Any]:
     """Get pricing information for a medication with or without insurance.
-    
+
     Args:
         medication_id: Medication ID
         insurance_id: Optional insurance ID for covered pricing
         quantity: Quantity of medication (default: 30 units)
-        
+
     Returns:
         Pricing information including with/without insurance and discount options
     """
@@ -217,24 +233,26 @@ def get_medication_price(medication_id: str, insurance_id: Optional[str] = None,
 
 def check_prescription_status(patient_id: str, prescription_id: str) -> Dict[str, Any]:
     """Check the status of a prescription or refill request.
-    
+
     Args:
         patient_id: Patient's account ID
         prescription_id: Prescription ID
-        
+
     Returns:
         Prescription status including processing stage and pickup availability
     """
     pass
 
 
-def find_otc_products(query: str, category: Optional[str] = None) -> List[Dict[str, Any]]:
+def find_otc_products(
+    query: str, category: Optional[str] = None
+) -> List[Dict[str, Any]]:
     """Search for over-the-counter products based on query and optional category.
-    
+
     Args:
         query: Search term
         category: Optional category filter (e.g., 'pain relief', 'allergy', 'first aid')
-        
+
     Returns:
         List of matching OTC products with details and availability
     """
@@ -243,7 +261,7 @@ def find_otc_products(query: str, category: Optional[str] = None) -> List[Dict[s
 
 def transfer_to_pharmacist() -> Dict[str, str]:
     """Transfer the conversation to a licensed pharmacist.
-    
+
     Returns:
         Status message of the transfer
     """
@@ -269,7 +287,7 @@ ALL_TOOLS = [
     get_medication_price,
     check_prescription_status,
     find_otc_products,
-    transfer_to_pharmacist
+    transfer_to_pharmacist,
 ]
 
 WIKI = """
@@ -366,7 +384,7 @@ RULES = [
     "The assistant should at most make one tool call at a time, and if the assistant makes a tool call, it does not respond to the patient at the same time.",
     "The assistant should never provide medical advice, diagnose conditions, or suggest changes to prescribed medication regimens.",
     "The assistant should always clarify that medication information is educational and not a substitute for professional medical advice.",
-    "The assistant should prioritize patient privacy and adhere to healthcare information protection standards."
+    "The assistant should prioritize patient privacy and adhere to healthcare information protection standards.",
 ]
 
 
@@ -380,8 +398,8 @@ class MockPharmacyEnv(Env):
         user_provider: Optional[str] = None,
         task_split: str = "test",
         task_index: Optional[int] = None,
+        **kwargs: Any,
     ):
-
         super().__init__(
             data_load_func=load_data,
             tools=ALL_TOOLS,
@@ -392,6 +410,7 @@ class MockPharmacyEnv(Env):
             user_model=user_model,
             user_provider=user_provider,
             task_index=task_index,
+            **kwargs,
         )
         self.terminate_tools = ["transfer_to_pharmacist"]
 

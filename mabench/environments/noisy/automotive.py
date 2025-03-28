@@ -8,11 +8,11 @@ from mabench.environments.user import UserStrategy
 
 def search_vehicle_parts(query: str, limit: int = 10) -> List[Dict[str, Any]]:
     """Search for vehicle parts by name, brand, or compatibility.
-    
+
     Args:
         query: Search query string
         limit: Maximum number of results to return (default: 10)
-        
+
     Returns:
         List of part objects with id, name, brand, compatibility, and price
     """
@@ -21,24 +21,26 @@ def search_vehicle_parts(query: str, limit: int = 10) -> List[Dict[str, Any]]:
 
 def get_part_details(part_id: str) -> Dict[str, Any]:
     """Get detailed information about a specific vehicle part.
-    
+
     Args:
         part_id: Vehicle part ID
-        
+
     Returns:
         Part details including specifications and compatibility
     """
     pass
 
 
-def create_maintenance_plan(vehicle_id: str, name: str, description: str) -> Dict[str, Any]:
+def create_maintenance_plan(
+    vehicle_id: str, name: str, description: str
+) -> Dict[str, Any]:
     """Create a new maintenance plan for a vehicle.
-    
+
     Args:
         vehicle_id: Vehicle's ID
         name: Name of the maintenance plan
         description: Description of the maintenance plan
-        
+
     Returns:
         Details of the created maintenance plan including ID
     """
@@ -47,11 +49,11 @@ def create_maintenance_plan(vehicle_id: str, name: str, description: str) -> Dic
 
 def add_services_to_plan(plan_id: str, service_ids: List[str]) -> Dict[str, Any]:
     """Add services to an existing maintenance plan.
-    
+
     Args:
         plan_id: Maintenance plan ID
         service_ids: List of service IDs to add
-        
+
     Returns:
         Status of the operation
     """
@@ -60,10 +62,10 @@ def add_services_to_plan(plan_id: str, service_ids: List[str]) -> Dict[str, Any]
 
 def get_customer_vehicles(customer_id: str) -> List[Dict[str, Any]]:
     """Get a list of the customer's registered vehicles.
-    
+
     Args:
         customer_id: Customer's ID
-        
+
     Returns:
         List of vehicle objects with id, make, model, and year
     """
@@ -72,10 +74,10 @@ def get_customer_vehicles(customer_id: str) -> List[Dict[str, Any]]:
 
 def get_maintenance_history(vehicle_id: str) -> List[Dict[str, Any]]:
     """Get the maintenance history for a vehicle.
-    
+
     Args:
         vehicle_id: Vehicle ID
-        
+
     Returns:
         List of service records for the vehicle
     """
@@ -84,25 +86,27 @@ def get_maintenance_history(vehicle_id: str) -> List[Dict[str, Any]]:
 
 def get_service_recommendations(vehicle_id: str, mileage: int) -> List[Dict[str, Any]]:
     """Get service recommendations based on vehicle and mileage.
-    
+
     Args:
         vehicle_id: Vehicle ID
         mileage: Current mileage of the vehicle
-        
+
     Returns:
         List of recommended service objects
     """
     pass
 
 
-def schedule_maintenance_appointment(vehicle_id: str, service_ids: List[str], preferred_date: str) -> Dict[str, Any]:
+def schedule_maintenance_appointment(
+    vehicle_id: str, service_ids: List[str], preferred_date: str
+) -> Dict[str, Any]:
     """Schedule a maintenance appointment for a vehicle.
-    
+
     Args:
         vehicle_id: Vehicle ID
         service_ids: List of service IDs to be performed
         preferred_date: Preferred appointment date (YYYY-MM-DD)
-        
+
     Returns:
         Appointment details including confirmation number
     """
@@ -111,23 +115,25 @@ def schedule_maintenance_appointment(vehicle_id: str, service_ids: List[str], pr
 
 def get_customer_profile(customer_id: str) -> Dict[str, Any]:
     """Get a customer's profile information.
-    
+
     Args:
         customer_id: Customer's ID
-        
+
     Returns:
         Customer profile details including contact information and membership level
     """
     pass
 
 
-def get_customer_appointments(customer_id: str, status: str = "all") -> List[Dict[str, Any]]:
+def get_customer_appointments(
+    customer_id: str, status: str = "all"
+) -> List[Dict[str, Any]]:
     """Get a customer's appointments.
-    
+
     Args:
         customer_id: Customer's ID
         status: Filter by status (all, upcoming, completed, canceled)
-        
+
     Returns:
         List of the customer's appointment records
     """
@@ -136,25 +142,29 @@ def get_customer_appointments(customer_id: str, status: str = "all") -> List[Dic
 
 def check_appointment_availability(location_id: str, date: str) -> Dict[str, Any]:
     """Check available appointment slots for a specific date and location.
-    
+
     Args:
         location_id: ID of the service center location
         date: Date to check (YYYY-MM-DD)
-        
+
     Returns:
         Available time slots for the specified date
     """
     pass
 
 
-def update_appointment(appointment_id: str, new_date: Optional[str] = None, new_services: Optional[List[str]] = None) -> Dict[str, Any]:
+def update_appointment(
+    appointment_id: str,
+    new_date: Optional[str] = None,
+    new_services: Optional[List[str]] = None,
+) -> Dict[str, Any]:
     """Update an existing appointment.
-    
+
     Args:
         appointment_id: ID of the appointment to update
         new_date: New appointment date (YYYY-MM-DD) if changing date
         new_services: New list of service IDs if changing services
-        
+
     Returns:
         Updated appointment details
     """
@@ -163,10 +173,10 @@ def update_appointment(appointment_id: str, new_date: Optional[str] = None, new_
 
 def cancel_appointment(appointment_id: str) -> Dict[str, Any]:
     """Cancel an existing appointment.
-    
+
     Args:
         appointment_id: ID of the appointment to cancel
-        
+
     Returns:
         Status of the cancellation operation
     """
@@ -175,27 +185,29 @@ def cancel_appointment(appointment_id: str) -> Dict[str, Any]:
 
 def get_service_centers(zip_code: str, radius: int = 25) -> List[Dict[str, Any]]:
     """Find service centers near a location.
-    
+
     Args:
         zip_code: ZIP code to search near
         radius: Search radius in miles (default: 25)
-        
+
     Returns:
         List of service centers with their details and distance
     """
     pass
 
 
-def register_new_vehicle(customer_id: str, make: str, model: str, year: int, vin: str) -> Dict[str, Any]:
+def register_new_vehicle(
+    customer_id: str, make: str, model: str, year: int, vin: str
+) -> Dict[str, Any]:
     """Register a new vehicle for a customer.
-    
+
     Args:
         customer_id: Customer's ID
         make: Vehicle make
         model: Vehicle model
         year: Vehicle year
         vin: Vehicle Identification Number
-        
+
     Returns:
         Created vehicle details
     """
@@ -204,10 +216,10 @@ def register_new_vehicle(customer_id: str, make: str, model: str, year: int, vin
 
 def check_recall_info(vin: str) -> List[Dict[str, Any]]:
     """Check for recall information on a vehicle.
-    
+
     Args:
         vin: Vehicle Identification Number
-        
+
     Returns:
         List of active recalls for the vehicle
     """
@@ -216,11 +228,11 @@ def check_recall_info(vin: str) -> List[Dict[str, Any]]:
 
 def calculate_service_cost(service_ids: List[str], vehicle_id: str) -> Dict[str, Any]:
     """Calculate the cost of selected services for a vehicle.
-    
+
     Args:
         service_ids: List of service IDs
         vehicle_id: Vehicle ID
-        
+
     Returns:
         Detailed cost breakdown including parts, labor, and total
     """
@@ -229,10 +241,10 @@ def calculate_service_cost(service_ids: List[str], vehicle_id: str) -> Dict[str,
 
 def fetch_service_catalog(vehicle_id: str) -> List[Dict[str, Any]]:
     """Get the catalog of available services for a specific vehicle.
-    
+
     Args:
         vehicle_id: Vehicle ID
-        
+
     Returns:
         List of available services with descriptions and base prices
     """
@@ -241,11 +253,11 @@ def fetch_service_catalog(vehicle_id: str) -> List[Dict[str, Any]]:
 
 def enroll_in_service_membership(customer_id: str, plan_type: str) -> Dict[str, Any]:
     """Enroll a customer in a service membership plan.
-    
+
     Args:
         customer_id: Customer's ID
         plan_type: Type of membership plan (basic, premium, or elite)
-        
+
     Returns:
         Membership details including benefits and expiration
     """
@@ -254,7 +266,7 @@ def enroll_in_service_membership(customer_id: str, plan_type: str) -> Dict[str, 
 
 def transfer_to_human_technician() -> Dict[str, str]:
     """Transfer the conversation to a human automotive technician.
-    
+
     Returns:
         Status message of the transfer
     """
@@ -281,7 +293,7 @@ ALL_TOOLS = [
     calculate_service_cost,
     fetch_service_catalog,
     enroll_in_service_membership,
-    transfer_to_human_technician
+    transfer_to_human_technician,
 ]
 
 WIKI = """
@@ -378,7 +390,7 @@ RULES = [
     "The AI should at most make one tool call at a time, and if the AI makes a tool call, it does not respond to the user at the same time.",
     "The AI should respect membership limitations and inform non-members when a membership feature is requested.",
     "The AI should not provide any subjective opinions on vehicle quality or unauthorized repair procedures.",
-    "The AI should prioritize customer privacy and only access vehicle history with consent."
+    "The AI should prioritize customer privacy and only access vehicle history with consent.",
 ]
 
 
@@ -392,8 +404,8 @@ class MockAutomotiveDomainEnv(Env):
         user_provider: Optional[str] = None,
         task_split: str = "test",
         task_index: Optional[int] = None,
+        **kwargs: Any,
     ):
-
         super().__init__(
             data_load_func=load_data,
             tools=ALL_TOOLS,
@@ -404,6 +416,7 @@ class MockAutomotiveDomainEnv(Env):
             user_model=user_model,
             user_provider=user_provider,
             task_index=task_index,
+            **kwargs,
         )
         self.terminate_tools = ["transfer_to_human_technician"]
 

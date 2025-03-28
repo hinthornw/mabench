@@ -13,11 +13,11 @@ def modify_pending_order_items(
 ) -> str:
     """
     Modify items in a pending order to new items of the same product type.
-    
+
     For a pending order, this function can only be called once. The agent needs to
     explain the exchange detail and ask for explicit user confirmation (yes/no)
     to proceed.
-    
+
     Args:
         order_id: The order id, such as '#W0000000'. Be careful there is a '#'
                  symbol at the beginning of the order id.
@@ -31,7 +31,7 @@ def modify_pending_order_items(
                           item price difference, such as 'gift_card_0000000' or
                           'credit_card_0000000'. These can be looked up from the
                           user or order details.
-        
+
     Returns:
         A JSON string containing the updated order details, or an error message.
     """
@@ -97,9 +97,7 @@ def modify_pending_order_items(
     for item_id, new_item_id in zip(item_ids, new_item_ids):
         item = [item for item in order["items"] if item["item_id"] == item_id][0]
         item["item_id"] = new_item_id
-        item["price"] = products[item["product_id"]]["variants"][new_item_id][
-            "price"
-        ]
+        item["price"] = products[item["product_id"]]["variants"][new_item_id]["price"]
         item["options"] = products[item["product_id"]]["variants"][new_item_id][
             "options"
         ]

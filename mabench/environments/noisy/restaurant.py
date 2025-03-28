@@ -6,14 +6,18 @@ from typing import Dict, List, Optional, Union, Any, Callable
 from mabench.environments.user import UserStrategy
 
 
-def browse_restaurants(cuisine_type: Optional[str] = None, location: Optional[str] = None, price_range: Optional[str] = None) -> List[Dict[str, Any]]:
+def browse_restaurants(
+    cuisine_type: Optional[str] = None,
+    location: Optional[str] = None,
+    price_range: Optional[str] = None,
+) -> List[Dict[str, Any]]:
     """Browse restaurants based on optional filters.
-    
+
     Args:
         cuisine_type: Type of cuisine (e.g., 'italian', 'chinese', 'mexican')
         location: Location or neighborhood
         price_range: Price range indicator ('$', '$$', '$$$', '$$$$')
-        
+
     Returns:
         List of matching restaurants with basic details
     """
@@ -22,25 +26,30 @@ def browse_restaurants(cuisine_type: Optional[str] = None, location: Optional[st
 
 def get_restaurant_details(restaurant_id: str) -> Dict[str, Any]:
     """Get detailed information about a specific restaurant.
-    
+
     Args:
         restaurant_id: Restaurant ID
-        
+
     Returns:
         Restaurant details including hours, address, contact information, and available services
     """
     pass
 
 
-def search_menu_items(restaurant_id: str, query: str = None, category: Optional[str] = None, dietary_restrictions: Optional[List[str]] = None) -> List[Dict[str, Any]]:
+def search_menu_items(
+    restaurant_id: str,
+    query: str = None,
+    category: Optional[str] = None,
+    dietary_restrictions: Optional[List[str]] = None,
+) -> List[Dict[str, Any]]:
     """Search for menu items at a restaurant.
-    
+
     Args:
         restaurant_id: Restaurant ID
         query: Search term (optional)
         category: Menu category filter (e.g., 'appetizers', 'entrees', 'desserts')
         dietary_restrictions: List of dietary restrictions (e.g., 'vegetarian', 'gluten-free', 'nut-free')
-        
+
     Returns:
         List of matching menu items with details and prices
     """
@@ -49,35 +58,44 @@ def search_menu_items(restaurant_id: str, query: str = None, category: Optional[
 
 def get_menu_item_details(restaurant_id: str, item_id: str) -> Dict[str, Any]:
     """Get detailed information about a specific menu item.
-    
+
     Args:
         restaurant_id: Restaurant ID
         item_id: Menu item ID
-        
+
     Returns:
         Menu item details including ingredients, allergens, nutritional information, and customization options
     """
     pass
 
 
-def check_reservation_availability(restaurant_id: str, date: str, time: str, party_size: int) -> Dict[str, Any]:
+def check_reservation_availability(
+    restaurant_id: str, date: str, time: str, party_size: int
+) -> Dict[str, Any]:
     """Check availability for a reservation.
-    
+
     Args:
         restaurant_id: Restaurant ID
         date: Date in YYYY-MM-DD format
         time: Time in HH:MM format (24-hour)
         party_size: Number of people in the party
-        
+
     Returns:
         Availability information including available time slots
     """
     pass
 
 
-def make_reservation(customer_id: str, restaurant_id: str, date: str, time: str, party_size: int, special_requests: Optional[str] = None) -> Dict[str, Any]:
+def make_reservation(
+    customer_id: str,
+    restaurant_id: str,
+    date: str,
+    time: str,
+    party_size: int,
+    special_requests: Optional[str] = None,
+) -> Dict[str, Any]:
     """Make a reservation at a restaurant.
-    
+
     Args:
         customer_id: Customer's account ID
         restaurant_id: Restaurant ID
@@ -85,23 +103,29 @@ def make_reservation(customer_id: str, restaurant_id: str, date: str, time: str,
         time: Time in HH:MM format (24-hour)
         party_size: Number of people in the party
         special_requests: Optional special requests for the reservation
-        
+
     Returns:
         Reservation confirmation including details and confirmation number
     """
     pass
 
 
-def modify_reservation(reservation_id: str, date: Optional[str] = None, time: Optional[str] = None, party_size: Optional[int] = None, special_requests: Optional[str] = None) -> Dict[str, Any]:
+def modify_reservation(
+    reservation_id: str,
+    date: Optional[str] = None,
+    time: Optional[str] = None,
+    party_size: Optional[int] = None,
+    special_requests: Optional[str] = None,
+) -> Dict[str, Any]:
     """Modify an existing reservation.
-    
+
     Args:
         reservation_id: Reservation ID
         date: Optional new date in YYYY-MM-DD format
         time: Optional new time in HH:MM format (24-hour)
         party_size: Optional new party size
         special_requests: Optional updated special requests
-        
+
     Returns:
         Updated reservation details
     """
@@ -110,26 +134,32 @@ def modify_reservation(reservation_id: str, date: Optional[str] = None, time: Op
 
 def cancel_reservation(reservation_id: str) -> Dict[str, str]:
     """Cancel an existing reservation.
-    
+
     Args:
         reservation_id: Reservation ID
-        
+
     Returns:
         Cancellation confirmation
     """
     pass
 
 
-def create_order(customer_id: str, restaurant_id: str, items: List[Dict[str, Any]], delivery_address: Optional[str] = None, pickup_time: Optional[str] = None) -> Dict[str, Any]:
+def create_order(
+    customer_id: str,
+    restaurant_id: str,
+    items: List[Dict[str, Any]],
+    delivery_address: Optional[str] = None,
+    pickup_time: Optional[str] = None,
+) -> Dict[str, Any]:
     """Create a new food order.
-    
+
     Args:
         customer_id: Customer's account ID
         restaurant_id: Restaurant ID
         items: List of items to order, each with item_id, quantity, and customizations
         delivery_address: Optional delivery address (required for delivery orders)
         pickup_time: Optional pickup time (required for pickup orders)
-        
+
     Returns:
         Order confirmation including details, total, and estimated time
     """
@@ -138,11 +168,11 @@ def create_order(customer_id: str, restaurant_id: str, items: List[Dict[str, Any
 
 def add_to_order(order_id: str, items: List[Dict[str, Any]]) -> Dict[str, Any]:
     """Add items to an existing order that hasn't been submitted.
-    
+
     Args:
         order_id: Order ID
         items: List of items to add, each with item_id, quantity, and customizations
-        
+
     Returns:
         Updated order details
     """
@@ -151,11 +181,11 @@ def add_to_order(order_id: str, items: List[Dict[str, Any]]) -> Dict[str, Any]:
 
 def remove_from_order(order_id: str, item_ids: List[str]) -> Dict[str, Any]:
     """Remove items from an existing order that hasn't been submitted.
-    
+
     Args:
         order_id: Order ID
         item_ids: List of item IDs to remove
-        
+
     Returns:
         Updated order details
     """
@@ -164,11 +194,11 @@ def remove_from_order(order_id: str, item_ids: List[str]) -> Dict[str, Any]:
 
 def apply_coupon(order_id: str, coupon_code: str) -> Dict[str, Any]:
     """Apply a coupon to an order.
-    
+
     Args:
         order_id: Order ID
         coupon_code: Coupon code to apply
-        
+
     Returns:
         Updated order details with applied discount
     """
@@ -177,11 +207,11 @@ def apply_coupon(order_id: str, coupon_code: str) -> Dict[str, Any]:
 
 def submit_order(order_id: str, payment_method_id: str) -> Dict[str, Any]:
     """Submit an order for processing.
-    
+
     Args:
         order_id: Order ID
         payment_method_id: Payment method ID to use
-        
+
     Returns:
         Order submission confirmation including tracking information
     """
@@ -190,10 +220,10 @@ def submit_order(order_id: str, payment_method_id: str) -> Dict[str, Any]:
 
 def track_order(order_id: str) -> Dict[str, Any]:
     """Track the status of an order.
-    
+
     Args:
         order_id: Order ID
-        
+
     Returns:
         Order status including current stage and estimated delivery/pickup time
     """
@@ -202,11 +232,11 @@ def track_order(order_id: str) -> Dict[str, Any]:
 
 def get_order_history(customer_id: str, limit: int = 5) -> List[Dict[str, Any]]:
     """Get a customer's order history.
-    
+
     Args:
         customer_id: Customer's account ID
         limit: Maximum number of orders to return (default: 5)
-        
+
     Returns:
         List of past orders with basic details
     """
@@ -215,23 +245,25 @@ def get_order_history(customer_id: str, limit: int = 5) -> List[Dict[str, Any]]:
 
 def get_saved_payment_methods(customer_id: str) -> List[Dict[str, Any]]:
     """Get a customer's saved payment methods.
-    
+
     Args:
         customer_id: Customer's account ID
-        
+
     Returns:
         List of saved payment methods with masked details
     """
     pass
 
 
-def add_payment_method(customer_id: str, payment_details: Dict[str, str]) -> Dict[str, Any]:
+def add_payment_method(
+    customer_id: str, payment_details: Dict[str, str]
+) -> Dict[str, Any]:
     """Add a new payment method to a customer's account.
-    
+
     Args:
         customer_id: Customer's account ID
         payment_details: Payment method details including type and required information
-        
+
     Returns:
         Confirmation of added payment method
     """
@@ -240,10 +272,10 @@ def add_payment_method(customer_id: str, payment_details: Dict[str, str]) -> Dic
 
 def get_loyalty_points(customer_id: str) -> Dict[str, Any]:
     """Get a customer's loyalty program information.
-    
+
     Args:
         customer_id: Customer's account ID
-        
+
     Returns:
         Loyalty program details including points balance and rewards
     """
@@ -252,7 +284,7 @@ def get_loyalty_points(customer_id: str) -> Dict[str, Any]:
 
 def transfer_to_customer_service() -> Dict[str, str]:
     """Transfer the conversation to a customer service representative.
-    
+
     Returns:
         Status message of the transfer
     """
@@ -278,7 +310,7 @@ ALL_TOOLS = [
     get_saved_payment_methods,
     add_payment_method,
     get_loyalty_points,
-    transfer_to_customer_service
+    transfer_to_customer_service,
 ]
 
 WIKI = """
@@ -371,7 +403,7 @@ RULES = [
     "The assistant should at most make one tool call at a time, and if the assistant makes a tool call, it does not respond to the customer at the same time.",
     "The assistant should never make personal recommendations or express opinions about restaurants or food items.",
     "The assistant should always clarify dietary information and allergen warnings when relevant to customer requests.",
-    "The assistant should prioritize customer privacy and security, never asking for full payment details or sensitive information."
+    "The assistant should prioritize customer privacy and security, never asking for full payment details or sensitive information.",
 ]
 
 
@@ -385,8 +417,8 @@ class MockRestaurantEnv(Env):
         user_provider: Optional[str] = None,
         task_split: str = "test",
         task_index: Optional[int] = None,
+        **kwargs: Any,
     ):
-
         super().__init__(
             data_load_func=load_data,
             tools=ALL_TOOLS,
@@ -397,6 +429,7 @@ class MockRestaurantEnv(Env):
             user_model=user_model,
             user_provider=user_provider,
             task_index=task_index,
+            **kwargs,
         )
         self.terminate_tools = ["transfer_to_customer_service"]
 

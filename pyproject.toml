@@ -15,7 +15,7 @@ dependencies = [
     "langgraph-api>=0.0.38",
     "langgraph-cli>=0.1.80",
     "langgraph-prebuilt>=0.1.4",
-    "langgraph-supervisor>=0.0.11",
+    "langgraph-swarm>=0.0.7",
     "starlette>=0.46.1",
 ]
 

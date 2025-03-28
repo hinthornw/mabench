@@ -15,10 +15,10 @@ def modify_pending_order_address(
 ) -> str:
     """
     Modify the shipping address of a pending order.
-    
+
     The agent needs to explain the modification detail and ask for explicit user
     confirmation (yes/no) to proceed.
-    
+
     Args:
         order_id: The order id, such as '#W0000000'. Be careful there is a '#'
                  symbol at the beginning of the order id.
@@ -28,7 +28,7 @@ def modify_pending_order_address(
         state: The province, such as 'CA'.
         country: The country, such as 'USA'.
         zip: The zip code, such as '12345'.
-        
+
     Returns:
         A JSON string containing the updated order details, or an error message.
     """

@@ -4,12 +4,12 @@
 def calculate(expression: str) -> str:
     """
     Calculate the result of a mathematical expression.
-    
+
     Args:
         expression: The mathematical expression to calculate, such as '2 + 2'.
                    The expression can contain numbers, operators (+, -, *, /),
                    parentheses, and spaces.
-    
+
     Returns:
         The calculated result as a string, rounded to 2 decimal places,
         or an error message.

@@ -6,14 +6,16 @@ from typing import Dict, List, Optional, Union, Any, Callable
 from mabench.environments.user import UserStrategy
 
 
-def verify_customer(customer_id: str = None, email: str = None, phone: str = None) -> Dict[str, Any]:
+def verify_customer(
+    customer_id: str = None, email: str = None, phone: str = None
+) -> Dict[str, Any]:
     """Verify a customer's identity using one or more identifiers.
-    
+
     Args:
         customer_id: Customer's account ID (optional)
         email: Customer's email address (optional)
         phone: Customer's phone number (optional)
-        
+
     Returns:
         Customer profile including verified status and account information
     """
@@ -22,10 +24,10 @@ def verify_customer(customer_id: str = None, email: str = None, phone: str = Non
 
 def get_customer_products(customer_id: str) -> List[Dict[str, Any]]:
     """Get a list of products owned by the customer.
-    
+
     Args:
         customer_id: Customer's account ID
-        
+
     Returns:
         List of products with product ID, name, purchase date, and warranty status
     """
@@ -34,23 +36,25 @@ def get_customer_products(customer_id: str) -> List[Dict[str, Any]]:
 
 def get_product_details(product_id: str) -> Dict[str, Any]:
     """Get detailed information about a specific product.
-    
+
     Args:
         product_id: Product ID
-        
+
     Returns:
         Product details including specifications, warranty information, and support history
     """
     pass
 
 
-def search_knowledge_base(query: str, product_id: Optional[str] = None) -> List[Dict[str, Any]]:
+def search_knowledge_base(
+    query: str, product_id: Optional[str] = None
+) -> List[Dict[str, Any]]:
     """Search the knowledge base for articles related to the query.
-    
+
     Args:
         query: Search query
         product_id: Optional product ID to filter results
-        
+
     Returns:
         List of knowledge base articles with titles and summaries
     """
@@ -59,25 +63,27 @@ def search_knowledge_base(query: str, product_id: Optional[str] = None) -> List[
 
 def get_article_content(article_id: str) -> Dict[str, Any]:
     """Get the full content of a knowledge base article.
-    
+
     Args:
         article_id: Knowledge base article ID
-        
+
     Returns:
         Full article content with title, body, and related topics
     """
     pass
 
 
-def create_support_ticket(customer_id: str, product_id: str, issue_description: str, priority: str = "medium") -> Dict[str, Any]:
+def create_support_ticket(
+    customer_id: str, product_id: str, issue_description: str, priority: str = "medium"
+) -> Dict[str, Any]:
     """Create a new support ticket for a customer issue.
-    
+
     Args:
         customer_id: Customer's account ID
         product_id: Product ID
         issue_description: Description of the issue
         priority: Priority level (low, medium, high, critical)
-        
+
     Returns:
         Created ticket details including ticket ID and estimated response time
     """
@@ -86,24 +92,26 @@ def create_support_ticket(customer_id: str, product_id: str, issue_description: 
 
 def get_ticket_status(ticket_id: str) -> Dict[str, Any]:
     """Get the status of a support ticket.
-    
+
     Args:
         ticket_id: Support ticket ID
-        
+
     Returns:
         Ticket status including current state, assigned agent, and updates
     """
     pass
 
 
-def update_ticket(ticket_id: str, comment: str, status: Optional[str] = None) -> Dict[str, Any]:
+def update_ticket(
+    ticket_id: str, comment: str, status: Optional[str] = None
+) -> Dict[str, Any]:
     """Add a comment to a ticket and optionally update its status.
-    
+
     Args:
         ticket_id: Support ticket ID
         comment: Comment to add to the ticket
         status: Optional new status (open, in_progress, on_hold, resolved, closed)
-        
+
     Returns:
         Updated ticket details
     """
@@ -112,11 +120,11 @@ def update_ticket(ticket_id: str, comment: str, status: Optional[str] = None) ->
 
 def run_diagnostics(product_id: str, diagnostic_type: str) -> Dict[str, Any]:
     """Run diagnostics on a product to identify issues.
-    
+
     Args:
         product_id: Product ID
         diagnostic_type: Type of diagnostic to run (basic, advanced, network, hardware, software)
-        
+
     Returns:
         Diagnostic results including identified issues and recommendations
     """
@@ -125,10 +133,10 @@ def run_diagnostics(product_id: str, diagnostic_type: str) -> Dict[str, Any]:
 
 def get_troubleshooting_steps(issue_id: str) -> List[Dict[str, Any]]:
     """Get step-by-step troubleshooting instructions for a known issue.
-    
+
     Args:
         issue_id: Issue identifier
-        
+
     Returns:
         List of troubleshooting steps in sequential order
     """
@@ -137,25 +145,27 @@ def get_troubleshooting_steps(issue_id: str) -> List[Dict[str, Any]]:
 
 def check_warranty_status(product_id: str) -> Dict[str, Any]:
     """Check the warranty status of a product.
-    
+
     Args:
         product_id: Product ID
-        
+
     Returns:
         Warranty details including expiration date, coverage type, and eligibility for service
     """
     pass
 
 
-def schedule_repair(customer_id: str, product_id: str, preferred_date: str, issue_description: str) -> Dict[str, Any]:
+def schedule_repair(
+    customer_id: str, product_id: str, preferred_date: str, issue_description: str
+) -> Dict[str, Any]:
     """Schedule a repair service for a product.
-    
+
     Args:
         customer_id: Customer's account ID
         product_id: Product ID
         preferred_date: Preferred service date in YYYY-MM-DD format
         issue_description: Description of the issue
-        
+
     Returns:
         Scheduled repair details including confirmation number and time window
     """
@@ -164,12 +174,12 @@ def schedule_repair(customer_id: str, product_id: str, preferred_date: str, issu
 
 def initiate_return(customer_id: str, product_id: str, reason: str) -> Dict[str, Any]:
     """Initiate a return process for a product.
-    
+
     Args:
         customer_id: Customer's account ID
         product_id: Product ID
         reason: Reason for return
-        
+
     Returns:
         Return details including return authorization number and instructions
     """
@@ -178,10 +188,10 @@ def initiate_return(customer_id: str, product_id: str, reason: str) -> Dict[str,
 
 def check_order_status(order_id: str) -> Dict[str, Any]:
     """Check the status of an order.
-    
+
     Args:
         order_id: Order ID
-        
+
     Returns:
         Order status including current state, shipping information, and estimated delivery
     """
@@ -190,10 +200,10 @@ def check_order_status(order_id: str) -> Dict[str, Any]:
 
 def generate_return_label(return_id: str) -> Dict[str, Any]:
     """Generate a return shipping label for an authorized return.
-    
+
     Args:
         return_id: Return authorization ID
-        
+
     Returns:
         Return label details including tracking number and download link
     """
@@ -202,23 +212,25 @@ def generate_return_label(return_id: str) -> Dict[str, Any]:
 
 def get_software_updates(product_id: str) -> List[Dict[str, Any]]:
     """Get available software updates for a product.
-    
+
     Args:
         product_id: Product ID
-        
+
     Returns:
         List of available updates with version numbers, release dates, and change logs
     """
     pass
 
 
-def check_service_outages(service_id: Optional[str] = None, zip_code: Optional[str] = None) -> Dict[str, Any]:
+def check_service_outages(
+    service_id: Optional[str] = None, zip_code: Optional[str] = None
+) -> Dict[str, Any]:
     """Check for service outages in a specific area or for a specific service.
-    
+
     Args:
         service_id: Optional service identifier
         zip_code: Optional ZIP code to check for location-specific outages
-        
+
     Returns:
         Service outage information including affected areas and estimated resolution time
     """
@@ -227,10 +239,10 @@ def check_service_outages(service_id: Optional[str] = None, zip_code: Optional[s
 
 def get_nearest_service_centers(zip_code: str) -> List[Dict[str, Any]]:
     """Find the nearest service centers to a location.
-    
+
     Args:
         zip_code: ZIP code to search from
-        
+
     Returns:
         List of service centers with addresses, hours, and available services
     """
@@ -239,10 +251,10 @@ def get_nearest_service_centers(zip_code: str) -> List[Dict[str, Any]]:
 
 def transfer_to_human_agent(department: str = "general") -> Dict[str, str]:
     """Transfer the conversation to a human support agent.
-    
+
     Args:
         department: Department to transfer to (general, technical, billing, warranty)
-        
+
     Returns:
         Status message of the transfer
     """
@@ -268,7 +280,7 @@ ALL_TOOLS = [
     get_software_updates,
     check_service_outages,
     get_nearest_service_centers,
-    transfer_to_human_agent
+    transfer_to_human_agent,
 ]
 
 WIKI = """
@@ -365,7 +377,7 @@ RULES = [
     "The agent should at most make one tool call at a time, and if the agent makes a tool call, it does not respond to the user at the same time.",
     "The agent should present troubleshooting steps in a clear, sequential manner and confirm completion at each stage.",
     "The agent should prioritize customer privacy and security, never asking for credentials or sensitive account details.",
-    "The agent should acknowledge the limitations of remote troubleshooting and recommend in-person service when appropriate."
+    "The agent should acknowledge the limitations of remote troubleshooting and recommend in-person service when appropriate.",
 ]
 
 
@@ -379,8 +391,8 @@ class MockTechSupportEnv(Env):
         user_provider: Optional[str] = None,
         task_split: str = "test",
         task_index: Optional[int] = None,
+        **kwargs: Any,
     ):
-
         super().__init__(
             data_load_func=load_data,
             tools=ALL_TOOLS,
@@ -391,6 +403,7 @@ class MockTechSupportEnv(Env):
             user_model=user_model,
             user_provider=user_provider,
             task_index=task_index,
+            **kwargs,
         )
         self.terminate_tools = ["transfer_to_human_agent"]
 

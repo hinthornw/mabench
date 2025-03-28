@@ -694,16 +694,16 @@ wheels = [
 ]
 
 [[package]]
-name = "langgraph-supervisor"
-version = "0.0.11"
+name = "langgraph-swarm"
+version = "0.0.7"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
+    { name = "langchain-core" },
     { name = "langgraph" },
-    { name = "langgraph-prebuilt" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/2e/34/4f2b4d97ddaa5b49e74313dcf7f165b2ad536c5f5c40f08daa671fcddc90/langgraph_supervisor-0.0.11.tar.gz", hash = "sha256:dfc30a173b2b92a52429fd15f276dcf2bfb5771a0e09130e415d38acbbb58702", size = 12834 }
+sdist = { url = "https://files.pythonhosted.org/packages/62/b8/1ccc14ec6a10ac9b33ea02cd93af52e8999d1411d372f6b66e6a589410bd/langgraph_swarm-0.0.7.tar.gz", hash = "sha256:3abc365ff53079944eb536deaa336860b6183476754fa42fb3403a3dcdb0aeb5", size = 10117 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/7b/7f/8998b233ba15ef9d991f3ae2531b880e03d17c324f3be73e4fbe1e2a7a7b/langgraph_supervisor-0.0.11-py3-none-any.whl", hash = "sha256:f68e13178acf9a98ae7fade936dcac00b079edcfdd24a4f51763d310701fe3c4", size = 10194 },
+    { url = "https://files.pythonhosted.org/packages/33/7b/e19dd72505044a3acb017211739b3d9ac7be5f3172b6c9262a7c2f750b08/langgraph_swarm-0.0.7-py3-none-any.whl", hash = "sha256:1e0232b76c35362b8fa476fe9381da0230685d9af10fd9ec0a4bc14c84fb72c2", size = 8054 },
 ]
 
 [[package]]
@@ -739,7 +739,7 @@ dependencies = [
     { name = "langgraph-api" },
     { name = "langgraph-cli" },
     { name = "langgraph-prebuilt" },
-    { name = "langgraph-supervisor" },
+    { name = "langgraph-swarm" },
     { name = "starlette" },
 ]
 
@@ -755,7 +755,7 @@ requires-dist = [
     { name = "langgraph-api", specifier = ">=0.0.38" },
     { name = "langgraph-cli", specifier = ">=0.1.80" },
     { name = "langgraph-prebuilt", specifier = ">=0.1.4" },
-    { name = "langgraph-supervisor", specifier = ">=0.0.11" },
+    { name = "langgraph-swarm", specifier = ">=0.0.7" },
     { name = "starlette", specifier = ">=0.46.1" },
 ]
 
