@@ -16,6 +16,7 @@ dependencies = [
     "langgraph-cli>=0.1.80",
     "langgraph-prebuilt>=0.1.4",
     "langgraph-swarm>=0.0.7",
+    "pandas>=2.2.3",
     "starlette>=0.46.1",
 ]
 
@@ -24,4 +25,9 @@ dependencies = [
 packages = ["mabench"]
 [tool.setuptools.package-dir]
 "mabench" = "mabench"
+
+[dependency-groups]
+dev = [
+    "plotly>=6.0.1",
+]
 

@@ -1,3 +1,4 @@
+import typing
 from langchain.chat_models import init_chat_model
 from langgraph.prebuilt import create_react_agent
 
@@ -70,10 +71,16 @@ Use all resources available to enable a successful interaction."""
     return workflow.compile(checkpointer=checkpointer, name="Support Supervisor")
 
 
-def create_full_swarm(env: EnvProtocol, model: str):
+def create_full_swarm(
+    env: EnvProtocol,
+    model: str,
+    connectivity: typing.Literal["mesh", "tree"] = "mesh",
+):
     environments = env.environments
     checkpointer = InMemorySaver()
     agents = []
+    if connectivity not in ("mesh", "tree"):
+        raise ValueError(f"Unknown connectivity: {connectivity}")
 
     def get_name(env):
         return f"{env.name}_agent".lower().replace(" ", "_").strip()
@@ -93,7 +100,10 @@ def create_full_swarm(env: EnvProtocol, model: str):
     )
     for environment in environments:
         name = get_name(environment)
-        this_handoffs = [t for a, t in handoff_tools.items() if a != name]
+        if connectivity == "mesh":
+            this_handoffs = [t for a, t in handoff_tools.items() if a != name]
+        else:
+            this_handoffs = [handoff_tools[router_name]]
         agents.append(
             create_single_agent(
                 environment.wiki,
@@ -137,5 +147,7 @@ def agent_factory(env: EnvProtocol, agent_strategy: str, model: str):
         return create_hierarchy(env, model)
     elif agent_strategy == "swarm":
         return create_full_swarm(env, model)
+    elif agent_strategy == "tree":
+        return create_full_swarm(env, model, connectivity="tree")
     else:
         raise ValueError(f"Unknown agent strategy: {agent_strategy}")

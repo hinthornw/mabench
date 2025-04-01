@@ -112,8 +112,11 @@ class Env(object):
             logger.error(f"Huh randomizing? {len(tasks)}")
             self.task_index = random.randint(0, len(tasks))
         try:
-            ti = self.task_index % len(tasks) if wrap_index else self.task_index
-            self.task = tasks[ti] if tasks else None
+            if tasks:
+                ti = self.task_index % len(tasks) if wrap_index else self.task_index
+                self.task = tasks[ti]
+            else:
+                self.task = None
         except IndexError:
             logger.error(
                 f"Invalid task index: {self.task_index}. Max index: {len(tasks)}"

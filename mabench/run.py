@@ -255,7 +255,7 @@ def main():
         "--agent-strategy",
         type=str,
         default="tool-calling",
-        choices=["single", "supervisor", "swarm"],
+        choices=["single", "supervisor", "swarm", "tree"],
     )
     parser.add_argument(
         "--remote",
