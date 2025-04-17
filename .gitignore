@@ -12,3 +12,9 @@ results/
 *.ipynb
 .ipynb_checkpoints/
 foo.py
+.editorconfig
+.langgraph.pid
+.langgraph_api/
+.vscode/
+performance_scaling.png
+token_cost_scaling.png

@@ -182,6 +182,8 @@ Highly recommended, so long as the message in question complies with your rules.
             # RemoveMessage(id=state["messages"][-1].id),
             # # Remove the target message.
             # RemoveMessage(id=target_message[1].id),
+            # Remove the handoff message
+            state["messages"][-1],
             ToolMessage(
                 content=f"The following message is forwarded from {source_agent}.",
                 name=tool_name,

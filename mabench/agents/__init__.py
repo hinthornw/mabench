@@ -76,8 +76,8 @@ You need to act as a supervisor, routing work to the appropriate agent to take a
 You interface with the user. The agents reporting to you cannot. If the other agents have questions or issues, they need you to answer them or relay the information to the user. The user needn't know about the presence of the other agents. You are accountable for the ultimate success of the interaction, including confirmation with your reports around task completion.
 Use all resources available to enable a successful interaction.
 
-The delegate agent will be able to read the transcript between you and the user.
- Be precise in your delegation instructions to ensure the delegate performs the appropriate work for this moment and nothing less or more."""
+The delegate agent will be able to read the transcript between you and the user. \
+If the delegate responds directly to the user, you can forward it using the forward_message tool."""
         ),
         supervisor_name="support_supervisor",
         handoff_prefix="delegate_to_",

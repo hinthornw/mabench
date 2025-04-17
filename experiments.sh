@@ -6,6 +6,7 @@ export LANGSMITH_PROJECT=daodejing
 CONCURRENCY=${1:-40}
 NUM_TRIALS=${2:-1}
 END_INDEX=${3:-40}
+EXPERIMENT_ID=${4:-}
 echo "Running experiments with concurrency $CONCURRENCY, num_trials $NUM_TRIALS, end_index $END_INDEX"
 
 # Start langgraph server
@@ -40,7 +41,7 @@ trap "cleanup 1" INT TERM
 # uv run --with-editable . python mabench/run.py --model "gpt-4o" --user-model "gpt-4o" --agent-strategy "supervisor" --env "combined" --end-index $END_INDEX --max-concurrency $CONCURRENCY --n-distractors 2 --num-trials $NUM_TRIALS
 # uv run --with-editable . python mabench/run.py --model "gpt-4o" --user-model "gpt-4o" --agent-strategy "supervisor" --env "combined" --end-index $END_INDEX --max-concurrency $CONCURRENCY --n-distractors 4 --num-trials $NUM_TRIALS
 # uv run --with-editable . python mabench/run.py --model "gpt-4o" --user-model "gpt-4o" --agent-strategy "supervisor" --env "combined" --end-index $END_INDEX --max-concurrency $CONCURRENCY --n-distractors 6 --num-trials $NUM_TRIALS
-uv run --with-editable . python mabench/run.py --model "gpt-4o" --user-model "gpt-4o" --agent-strategy "supervisor" --env "combined" --end-index $END_INDEX --max-concurrency $CONCURRENCY --n-distractors 8 --num-trials $NUM_TRIALS
+uv run --with-editable . python mabench/run.py --model "gpt-4o" --user-model "gpt-4o" --agent-strategy "supervisor" --env "combined" --end-index $END_INDEX --max-concurrency $CONCURRENCY --n-distractors 8 --num-trials $NUM_TRIALS --existing $EXPERIMENT_ID
 
 
 # Swarm tree. Swarm but the sub-agents aren't directly aware of each other. Or supervisor but where it actually transfers

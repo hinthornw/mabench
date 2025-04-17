@@ -161,22 +161,8 @@ def run(
                 rt.client.create_feedback(rt.id, key="reward", score=result.reward)
                 return result
 
-            @ls.traceable(name="Run Experiment")
-            def _run_caught(idx: int, agent) -> EnvRunResult:
-                try:
-                    return _run(idx, agent)
-                except Exception as e:
-                    ls.get_current_run_tree().error = repr(e)
-                    return EnvRunResult(
-                        task_id=idx,
-                        reward=0.0,
-                        info={"error": str(e), "traceback": traceback.format_exc()},
-                        traj=[],
-                        trial=idx,
-                    )
-
             def _run_example(idx: int) -> EnvRunResult:
-                return _run_caught(
+                return _run(
                     idx,
                     agent=agent,
                     langsmith_extra={
