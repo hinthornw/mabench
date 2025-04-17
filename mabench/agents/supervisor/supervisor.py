@@ -1,6 +1,7 @@
 from typing import Any, Callable, Literal, Optional, Type, Union
 
 from langchain_core.language_models import LanguageModelLike
+from langchain_core.messages import RemoveMessage
 from langchain_core.tools import BaseTool
 from langgraph.graph import END, START, StateGraph
 from langgraph.prebuilt.chat_agent_executor import (
@@ -17,7 +18,9 @@ from mabench.agents.supervisor.agent_name import AgentNameMode, with_agent_name
 from mabench.agents.supervisor.handoff import (
     create_handoff_back_messages,
     create_handoff_tool,
+    create_forward_message_tool,
 )
+from langchain_core.messages import ToolMessage, AIMessage
 
 OutputMode = Literal["full_history", "last_message"]
 """Mode for adding agent outputs to the message history in the multi-agent workflow
@@ -50,8 +53,25 @@ def _make_call_agent(
                 f"Needs to be one of {OutputMode.__args__}"
             )
 
-        if add_handoff_back_messages:
-            messages.extend(create_handoff_back_messages(agent.name, supervisor_name))
+        if False:  # add_handoff_back_messages:
+            # messages.extend(create_handoff_back_messages(agent.name, supervisor_name))
+            last_message = messages[-1]
+            messages.append(RemoveMessage(id=last_message.id))
+            messages.extend(
+                create_handoff_back_messages(
+                    agent.name, supervisor_name, message=last_message.content
+                )
+            )
+        # remove all the handoff messages
+        to_drop = []
+        for m in messages[:]:
+            if isinstance(m, ToolMessage) and m.name.startswith("delegate_to"):
+                messages.append(RemoveMessage(id=m.id))
+                to_drop.append(m.tool_call_id)
+        if to_drop:
+            for m in messages[:]:
+                if isinstance(m, AIMessage) and m.tool_calls:
+                    m.tool_calls = [c for c in m.tool_calls if c["id"] not in to_drop]
 
         return {
             **output,
@@ -59,7 +79,10 @@ def _make_call_agent(
         }
 
     def call_agent(state: dict) -> dict:
-        # content = state["messages"][-2].tool_calls[0]["args"]["instructions"]
+        # Drop last two messages
+        # messages = []
+        # for m in state["messages"][-2:]:
+        #     messages.append(RemoveMessage(id=m.id))
         output = agent.invoke(state)
         return _process_output(output)
 
@@ -152,7 +175,10 @@ def create_supervisor(
         create_handoff_tool(agent_name=agent.name, prefix=handoff_prefix)
         for agent in agents
     ]
-    all_tools = (tools or []) + handoff_tools
+
+    all_tools = (
+        (tools or []) + handoff_tools + [create_forward_message_tool(supervisor_name)]
+    )
     model = model.bind_tools(all_tools, parallel_tool_calls=False)
 
     if include_agent_name:

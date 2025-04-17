@@ -20,6 +20,18 @@ from mabench.bench_types import (
 )
 import langsmith as ls
 import logging
+from deepdiff import DeepDiff
+import json
+
+
+def pretty_deepdiff(a, b):
+    diff = DeepDiff(a, b, verbose_level=2)
+    # You can pretty print the diff dict as JSON for clarity
+    try:
+        return json.dumps(diff, indent=2, sort_keys=True)
+    except BaseException:
+        return str(diff)
+
 
 logger = logging.getLogger(__name__)
 
@@ -206,6 +218,9 @@ class Env(object):
 
     def calculate_reward(self) -> RewardResult:
         data_hash = self.get_data_hash()
+        from mabench.utils import get_data
+
+        og_data = get_data().copy()
         reward = 1.0  # Start out assuming success
         # You can fail if either:
         # a) You don't take the required actions
@@ -232,7 +247,7 @@ class Env(object):
                 )
                 # We compare side effects.
                 if not info.r_actions:
-                    print("OH DIFFERENT", data_hash, gt_data_hash)
+                    gt_data = get_data().copy()
                     expected_actions = "\n".join(
                         [
                             f"{action.name}: {action.kwargs}"
@@ -240,11 +255,15 @@ class Env(object):
                             if action.name != RESPOND_ACTION_NAME
                         ]
                     )
+                    diff = pretty_deepdiff(og_data, gt_data)
+                    print(
+                        f"\n###  Different State   ###\n\nDiff:\n\n{diff}\n\nExpected:\n\n{expected_actions}"
+                    )
                     rt.client.create_feedback(
                         rt.trace_id,
                         key="action_state",
                         score=0.0,
-                        comment=f"Expected actions:\n\n{expected_actions}",
+                        comment=f"Expected actions:\n\n{expected_actions}\n\nData diff:\n\n{diff}",
                     )
                     reward = 0.0
                 else:

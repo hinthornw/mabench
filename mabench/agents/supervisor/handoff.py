@@ -2,7 +2,13 @@ import re
 import uuid
 from typing import cast
 
-from langchain_core.messages import AIMessage, BaseMessage, ToolCall, ToolMessage
+from langchain_core.messages import (
+    AIMessage,
+    BaseMessage,
+    RemoveMessage,
+    ToolCall,
+    ToolMessage,
+)
 from langchain_core.tools import BaseTool, InjectedToolCallId, tool
 from langgraph.prebuilt import InjectedState
 from langgraph.types import Command, Send
@@ -69,18 +75,20 @@ def create_handoff_tool(*, agent_name: str, prefix: str = "transfer_to_") -> Bas
             (the tool name will look like this: `transfer_to_<agent_name>`).
     """
     tool_name = f"{prefix}{_normalize_agent_name(agent_name)}"
+    desc = f"""Delegate work to {agent_name} and use their response to inform your next action. \
+{agent_name} can take actions or retrieve knowledge relevant to their domain but cannot interface with the user.
+When
+"""
 
-    @tool(tool_name)
+    @tool(tool_name, description=desc)
     def handoff_to_agent(
-        instructions: str,
+        # instructions: str,
         state: Annotated[dict, InjectedState],
         tool_call_id: Annotated[str, InjectedToolCallId],
     ):
-        """Ask another agent for help. Provide explicit instructions detailing the agent's task.
-        Use this tool to divide-and-conquer work or to leverage another agent's domain expertise.
-        """
+
         tool_message = ToolMessage(
-            content=f"Successfully transferred to {agent_name}",
+            content=f"Successfully delegated to {agent_name}",
             name=tool_name,
             tool_call_id=tool_call_id,
         )
@@ -91,17 +99,17 @@ def create_handoff_tool(*, agent_name: str, prefix: str = "transfer_to_") -> Bas
             graph=Command.PARENT,
             # NOTE: we are using Send here to allow the ToolNode in langgraph.prebuilt
             # to handle parallel handoffs by combining all Send commands into a single command
-            goto=[Send(agent_name, {"messages": handoff_messages})],
+            goto=[Send(agent_name, {"messages": handoff_messages[:-2]})],
             # we also propagate the update to make sure the handoff messages are applied
             # to the parent graph's state
-            update={"messages": handoff_messages},
+            update={"messages": handoff_messages[:-2]},
         )
 
     return handoff_to_agent
 
 
 def create_handoff_back_messages(
-    agent_name: str, supervisor_name: str
+    agent_name: str, supervisor_name: str, message: str = ""
 ) -> tuple[AIMessage, ToolMessage]:
     """Create a pair of (AIMessage, ToolMessage) to add to the message history when returning control to the supervisor."""
     tool_call_id = str(uuid.uuid4())
@@ -109,13 +117,90 @@ def create_handoff_back_messages(
     tool_calls = [ToolCall(name=tool_name, args={}, id=tool_call_id)]
     return (
         AIMessage(
-            content=f"Transferring back to {supervisor_name}",
+            content=message or f"Transferring back to {supervisor_name}",
             tool_calls=tool_calls,
             name=agent_name,
         ),
         ToolMessage(
-            content=f"Successfully transferred back to {supervisor_name}",
+            content=f"Successfully transferred back to {supervisor_name}."
+            f" Interactions between the {agent_name} and {supervisor_name} are not visible to the user."
+            f" {agent_name} will conduct no further work until {supervisor_name} explicitly assigns more.",
             name=tool_name,
             tool_call_id=tool_call_id,
         ),
     )
+
+
+# def forward_message(source_agent: str) -> str:
+#         """If you'd like to directly route the most recent message from the "source_agent" you delegated to, use this tool.
+
+# This is useful for avoiding the need to rewrite the message content and for letting the delegate agent have
+# a more direct interaction with the user.
+
+# A major benefit of using this tool is that it helps prevent the 'telephone game' effect, where the supervisor
+# acts as a constant intermediary and may inadvertently cause information loss or distortion between agents and the user.
+# """
+#         return messages[0]
+
+
+def create_forward_message_tool(supervisor_name: str = "supervisor") -> BaseTool:
+    """Create a tool that can handoff control to the requested agent.
+
+    Args:
+        agent_name: The name of the agent to handoff control to, i.e.
+            the name of the agent node in the multi-agent graph.
+            Agent names should be simple, clear and unique, preferably in snake_case,
+            although you are only limited to the names accepted by LangGraph
+            nodes as well as the tool names accepted by LLM providers
+            (the tool name will look like this: `transfer_to_<agent_name>`).
+    """
+    tool_name = "forward_message"
+    desc = """Use this tool to directly route the most recent message from the delegated 'source_agent' to the user, \
+avoiding message rewriting and preserving information fidelity by bypassing the supervisor as an intermediary.
+
+Highly recommended, so long as the message in question complies with your rules."""
+
+    @tool(tool_name, description=desc)
+    def forward_message(
+        source_agent: str,
+        state: Annotated[dict, InjectedState],
+        tool_call_id: Annotated[str, InjectedToolCallId],
+    ):
+        target_message = next(
+            (
+                (i, m)
+                for i, m in enumerate(reversed(state["messages"]))
+                if isinstance(m, AIMessage)
+                and (m.name or "").lower() == source_agent.lower()
+            ),
+            None,
+        )
+        if not target_message:
+            return f"Could not find message from source agent {source_agent}"
+        updates = [
+            # # Remove the AI message that called this.
+            # RemoveMessage(id=state["messages"][-1].id),
+            # # Remove the target message.
+            # RemoveMessage(id=target_message[1].id),
+            ToolMessage(
+                content=f"The following message is forwarded from {source_agent}.",
+                name=tool_name,
+                tool_call_id=tool_call_id,
+            ),
+            AIMessage(
+                content=target_message[1].content,
+                name=supervisor_name,
+                id=str(uuid.uuid4()),
+            ),
+        ]
+
+        return Command(
+            graph=Command.PARENT,
+            # NOTE: this does nothing.
+            goto="__end__",
+            # we also propagate the update to make sure the handoff messages are applied
+            # to the parent graph's state
+            update={"messages": updates},
+        )
+
+    return forward_message

@@ -26,12 +26,12 @@ echo "Running experiments..."
 trap "cleanup 1" INT TERM
 
 # Flat agent experiments:
-uv run --with-editable . python mabench/run.py --model "gpt-4o" --user-model "gpt-4o" --agent-strategy "single" --env "combined" --end-index $END_INDEX --max-concurrency $CONCURRENCY --n-distractors 0 --num-trials $NUM_TRIALS
-uv run --with-editable . python mabench/run.py --model "gpt-4o" --user-model "gpt-4o" --agent-strategy "single" --env "combined" --end-index $END_INDEX --max-concurrency $CONCURRENCY --n-distractors 1 --num-trials $NUM_TRIALS
-uv run --with-editable . python mabench/run.py --model "gpt-4o" --user-model "gpt-4o" --agent-strategy "single" --env "combined" --end-index $END_INDEX --max-concurrency $CONCURRENCY --n-distractors 2 --num-trials $NUM_TRIALS
-uv run --with-editable . python mabench/run.py --model "gpt-4o" --user-model "gpt-4o" --agent-strategy "single" --env "combined" --end-index $END_INDEX --max-concurrency $CONCURRENCY --n-distractors 4 --num-trials $NUM_TRIALS
-uv run --with-editable . python mabench/run.py --model "gpt-4o" --user-model "gpt-4o" --agent-strategy "single" --env "combined" --end-index $END_INDEX --max-concurrency $CONCURRENCY --n-distractors 6 --num-trials $NUM_TRIALS
-uv run --with-editable . python mabench/run.py --model "gpt-4o" --user-model "gpt-4o" --agent-strategy "single" --env "combined" --end-index $END_INDEX --max-concurrency $CONCURRENCY --n-distractors 8 --num-trials $NUM_TRIALS
+# uv run --with-editable . python mabench/run.py --model "gpt-4o" --user-model "gpt-4o" --agent-strategy "single" --env "combined" --end-index $END_INDEX --max-concurrency $CONCURRENCY --n-distractors 0 --num-trials $NUM_TRIALS
+# uv run --with-editable . python mabench/run.py --model "gpt-4o" --user-model "gpt-4o" --agent-strategy "single" --env "combined" --end-index $END_INDEX --max-concurrency $CONCURRENCY --n-distractors 1 --num-trials $NUM_TRIALS
+# uv run --with-editable . python mabench/run.py --model "gpt-4o" --user-model "gpt-4o" --agent-strategy "single" --env "combined" --end-index $END_INDEX --max-concurrency $CONCURRENCY --n-distractors 2 --num-trials $NUM_TRIALS
+# uv run --with-editable . python mabench/run.py --model "gpt-4o" --user-model "gpt-4o" --agent-strategy "single" --env "combined" --end-index $END_INDEX --max-concurrency $CONCURRENCY --n-distractors 4 --num-trials $NUM_TRIALS
+# uv run --with-editable . python mabench/run.py --model "gpt-4o" --user-model "gpt-4o" --agent-strategy "single" --env "combined" --end-index $END_INDEX --max-concurrency $CONCURRENCY --n-distractors 6 --num-trials $NUM_TRIALS
+# uv run --with-editable . python mabench/run.py --model "gpt-4o" --user-model "gpt-4o" --agent-strategy "single" --env "combined" --end-index $END_INDEX --max-concurrency $CONCURRENCY --n-distractors 8 --num-trials $NUM_TRIALS
 
 
 # Supervisor. Need at least one distractor for it to actually be interesting
@@ -39,7 +39,7 @@ uv run --with-editable . python mabench/run.py --model "gpt-4o" --user-model "gp
 # uv run --with-editable . python mabench/run.py --model "gpt-4o" --user-model "gpt-4o" --agent-strategy "supervisor" --env "combined" --end-index $END_INDEX --max-concurrency $CONCURRENCY --n-distractors 1 --num-trials $NUM_TRIALS
 # uv run --with-editable . python mabench/run.py --model "gpt-4o" --user-model "gpt-4o" --agent-strategy "supervisor" --env "combined" --end-index $END_INDEX --max-concurrency $CONCURRENCY --n-distractors 2 --num-trials $NUM_TRIALS
 # uv run --with-editable . python mabench/run.py --model "gpt-4o" --user-model "gpt-4o" --agent-strategy "supervisor" --env "combined" --end-index $END_INDEX --max-concurrency $CONCURRENCY --n-distractors 4 --num-trials $NUM_TRIALS
-uv run --with-editable . python mabench/run.py --model "gpt-4o" --user-model "gpt-4o" --agent-strategy "supervisor" --env "combined" --end-index $END_INDEX --max-concurrency $CONCURRENCY --n-distractors 6 --num-trials $NUM_TRIALS
+# uv run --with-editable . python mabench/run.py --model "gpt-4o" --user-model "gpt-4o" --agent-strategy "supervisor" --env "combined" --end-index $END_INDEX --max-concurrency $CONCURRENCY --n-distractors 6 --num-trials $NUM_TRIALS
 uv run --with-editable . python mabench/run.py --model "gpt-4o" --user-model "gpt-4o" --agent-strategy "supervisor" --env "combined" --end-index $END_INDEX --max-concurrency $CONCURRENCY --n-distractors 8 --num-trials $NUM_TRIALS
 
 
@@ -49,7 +49,7 @@ uv run --with-editable . python mabench/run.py --model "gpt-4o" --user-model "gp
 # uv run --with-editable . python mabench/run.py --model "gpt-4o" --user-model "gpt-4o" --agent-strategy "tree" --env "combined" --end-index $END_INDEX --max-concurrency $CONCURRENCY --n-distractors 1 --num-trials $NUM_TRIALS
 # uv run --with-editable . python mabench/run.py --model "gpt-4o" --user-model "gpt-4o" --agent-strategy "tree" --env "combined" --end-index $END_INDEX --max-concurrency $CONCURRENCY --n-distractors 2 --num-trials $NUM_TRIALS
 # uv run --with-editable . python mabench/run.py --model "gpt-4o" --user-model "gpt-4o" --agent-strategy "tree" --env "combined" --end-index $END_INDEX --max-concurrency $CONCURRENCY --n-distractors 4 --num-trials $NUM_TRIALS
-uv run --with-editable . python mabench/run.py --model "gpt-4o" --user-model "gpt-4o" --agent-strategy "tree" --env "combined" --end-index $END_INDEX --max-concurrency $CONCURRENCY --n-distractors 6 --num-trials $NUM_TRIALS
+# uv run --with-editable . python mabench/run.py --model "gpt-4o" --user-model "gpt-4o" --agent-strategy "tree" --env "combined" --end-index $END_INDEX --max-concurrency $CONCURRENCY --n-distractors 6 --num-trials $NUM_TRIALS
 # uv run --with-editable . python mabench/run.py --model "gpt-4o" --user-model "gpt-4o" --agent-strategy "tree" --env "combined" --end-index $END_INDEX --max-concurrency $CONCURRENCY --n-distractors 8 --num-trials $NUM_TRIALS
 
 # Swarm
@@ -58,7 +58,7 @@ uv run --with-editable . python mabench/run.py --model "gpt-4o" --user-model "gp
 # uv run --with-editable . python mabench/run.py --model "gpt-4o" --user-model "gpt-4o" --agent-strategy "swarm" --env "combined" --end-index $END_INDEX --max-concurrency $CONCURRENCY --n-distractors 2 --num-trials $NUM_TRIALS
 # uv run --with-editable . python mabench/run.py --model "gpt-4o" --user-model "gpt-4o" --agent-strategy "swarm" --env "combined" --end-index $END_INDEX --max-concurrency $CONCURRENCY --n-distractors 4 --num-trials $NUM_TRIALS
 # uv run --with-editable . python mabench/run.py --model "gpt-4o" --user-model "gpt-4o" --agent-strategy "swarm" --env "combined" --end-index $END_INDEX --max-concurrency $CONCURRENCY --n-distractors 6 --num-trials $NUM_TRIALS
-uv run --with-editable . python mabench/run.py --model "gpt-4o" --user-model "gpt-4o" --agent-strategy "swarm" --env "combined" --end-index $END_INDEX --max-concurrency $CONCURRENCY --n-distractors 8 --num-trials $NUM_TRIALS
+# uv run --with-editable . python mabench/run.py --model "gpt-4o" --user-model "gpt-4o" --agent-strategy "swarm" --env "combined" --end-index $END_INDEX --max-concurrency $CONCURRENCY --n-distractors 8 --num-trials $NUM_TRIALS
 
 find ./results -name "*.json" -exec stat -f "%m %N" {} + | sort -nr | cut -d' ' -f2- | while read file; do echo -n "$file: "; jq 'reduce .[] as $item ({"sum":0,"count":0}; .sum += $item.reward | .count += 1) | .sum / .count' "$file"; done
 

@@ -11,7 +11,12 @@ from langgraph_swarm import create_handoff_tool, create_swarm
 
 
 def create_single_agent(
-    wiki: str, model: str, tools: list, checkpointer: InMemorySaver | bool, name: str
+    wiki: str,
+    model: str,
+    tools: list,
+    checkpointer: InMemorySaver | bool,
+    name: str,
+    additional_desc: str = "",
 ):
     from langgraph.prebuilt import create_react_agent
 
@@ -23,7 +28,7 @@ In assisting the user, please comply with the following policies.
 
 # Instruction
 You need to act as an agent that use your tools to help the user according to the above policy.
-Try to be helpful and always follow the policy."""  # noqa: E501
+Try to be helpful and always follow the policy.{additional_desc}"""  # noqa: E501
 
     print(f"Constructing agent {name} with {len(tools)} tools")
     agent = create_react_agent(
@@ -40,14 +45,21 @@ def create_hierarchy(env: EnvProtocol, model: str):
     environments = env.environments
     checkpointer = InMemorySaver()
     agents = []
+    other_tool = environments[0].tools_map["transfer_to_human_agents"]
     for environment in environments:
+
         agents.append(
             create_single_agent(
                 environment.wiki,
                 model,
-                list(environment.tools_map.values()),
+                [
+                    t
+                    for t in environment.tools_map.values()
+                    if t.name != other_tool.name
+                ],
                 True,
                 name=f"{environment.name}_agent".lower().replace(" ", "_").strip(),
+                # additional_desc="\n\nIf you need help or cannot handle the task, return to the supervisor explaining why.",
             )
         )
 
@@ -62,10 +74,14 @@ def create_hierarchy(env: EnvProtocol, model: str):
 You need to act as a supervisor, routing work to the appropriate agent to take actions or retrieve knowledge. When the agents are finished, they will report back to you with the answer, confirmation of completion, or an error if they run into an issue. 
 
 You interface with the user. The agents reporting to you cannot. If the other agents have questions or issues, they need you to answer them or relay the information to the user. The user needn't know about the presence of the other agents. You are accountable for the ultimate success of the interaction, including confirmation with your reports around task completion.
-Use all resources available to enable a successful interaction."""
+Use all resources available to enable a successful interaction.
+
+The delegate agent will be able to read the transcript between you and the user.
+ Be precise in your delegation instructions to ensure the delegate performs the appropriate work for this moment and nothing less or more."""
         ),
         supervisor_name="support_supervisor",
-        handoff_prefix="assign_to_",
+        handoff_prefix="delegate_to_",
+        tools=[other_tool],
         include_agent_name="inline",
     )
     return workflow.compile(checkpointer=checkpointer, name="Support Supervisor")

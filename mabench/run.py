@@ -86,11 +86,14 @@ def run(
         for example in lsc.list_examples(dataset_id=dataset_id)
     }
 
-    experiment = lsc.create_project(
-        ckpt_path.split("/")[-1].split(".json")[0],
-        reference_dataset_id=dataset_id,
-        metadata={**vars(args), "env": env.name},
-    )
+    if args.existing:
+        experiment = lsc.read_project(project_id=args.existing)
+    else:
+        experiment = lsc.create_project(
+            ckpt_path.split("/")[-1].split(".json")[0],
+            reference_dataset_id=dataset_id,
+            metadata={**vars(args), "env": env.name},
+        )
     try:
         for i in range(args.num_trials):
             if args.task_ids and len(args.task_ids) > 0:
@@ -132,7 +135,9 @@ def run(
                         trial=i,
                     )
                 except BaseException as e:
-                    ls.get_current_run_tree().error = repr(e)
+                    rt = ls.get_current_run_tree()
+                    rt.error = repr(e)
+                    print(f"❌ task_id={idx}: {rt.get_url()}")
                     result = EnvRunResult(
                         task_id=idx,
                         reward=0.0,
@@ -156,8 +161,22 @@ def run(
                 rt.client.create_feedback(rt.id, key="reward", score=result.reward)
                 return result
 
+            @ls.traceable(name="Run Experiment")
+            def _run_caught(idx: int, agent) -> EnvRunResult:
+                try:
+                    return _run(idx, agent)
+                except Exception as e:
+                    ls.get_current_run_tree().error = repr(e)
+                    return EnvRunResult(
+                        task_id=idx,
+                        reward=0.0,
+                        info={"error": str(e), "traceback": traceback.format_exc()},
+                        traj=[],
+                        trial=idx,
+                    )
+
             def _run_example(idx: int) -> EnvRunResult:
-                return _run(
+                return _run_caught(
                     idx,
                     agent=agent,
                     langsmith_extra={
@@ -308,6 +327,9 @@ def main():
         type=int,
         default=0,
         help="Number of distractors to use",
+    )
+    parser.add_argument(
+        "--existing", type=str, help="Existing project ID to use", default=None
     )
     args = parser.parse_args()
     print(args)
