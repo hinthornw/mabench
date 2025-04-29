@@ -6,6 +6,7 @@ from langchain_core.messages import AIMessage, BaseMessage
 from langchain_core.runnables import RunnableLambda
 
 NAME_PATTERN = re.compile(r"<name>(.*?)</name>", re.DOTALL)
+PREFIX_PATTERN = re.compile(r"^<name>(.*)</name><content>$", re.DOTALL)
 CONTENT_PATTERN = re.compile(r"<content>(.*?)</content>", re.DOTALL)
 
 AgentNameMode = Literal["inline"]
@@ -36,15 +37,12 @@ def add_inline_agent_name(message: BaseMessage) -> BaseMessage:
 
     formatted_message = message.model_copy()
     if _is_content_blocks_content(formatted_message.content):
-        text_blocks = [block for block in message.content if block["type"] == "text"]
-        non_text_blocks = [
-            block for block in message.content if block["type"] != "text"
-        ]
-        content = text_blocks[0]["text"] if text_blocks else ""
-        formatted_content = f"<name>{message.name}</name><content>{content}</content>"
-        formatted_message.content = [
-            {"type": "text", "text": formatted_content}
-        ] + non_text_blocks
+        blocks = (
+            [{"type": "text", "text": f"<name>{message.name}</name><content>"}]
+            + formatted_message.content
+            + [{"type": "text", "text": "</content>"}]
+        )
+        formatted_message.content = blocks
     else:
         formatted_message.content = (
             f"<name>{message.name}</name><content>{formatted_message.content}</content>"
@@ -68,14 +66,14 @@ def remove_inline_agent_name(message: BaseMessage) -> BaseMessage:
 
     is_content_blocks_content = _is_content_blocks_content(message.content)
     if is_content_blocks_content:
-        text_blocks = [block for block in message.content if block["type"] == "text"]
-        if not text_blocks:
+        if not [block for block in message.content if block["type"] == "text"]:
             return message
-
-        non_text_blocks = [
-            block for block in message.content if block["type"] != "text"
-        ]
-        content = text_blocks[0]["text"]
+        blocks = message.content[:]
+        if PREFIX_PATTERN.match(blocks[0]["text"]):
+            blocks = blocks[1:]
+        if blocks[-1]["type"] == "text" and blocks[-1]["text"] == "</content>":
+            blocks = blocks[:-1]
+        return message.model_copy(update={"content": blocks})
     else:
         content = message.content
 

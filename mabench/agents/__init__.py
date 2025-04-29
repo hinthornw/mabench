@@ -41,7 +41,13 @@ Try to be helpful and always follow the policy.{additional_desc}"""  # noqa: E50
     return agent
 
 
-def create_hierarchy(env: EnvProtocol, model: str):
+def create_hierarchy(
+    env: EnvProtocol,
+    model: str,
+    add_forwarding: bool = False,
+    strip_handoffs: bool = False,
+    handoff_prefix: str = "delegate_to_",
+):
     environments = env.environments
     checkpointer = InMemorySaver()
     agents = []
@@ -59,13 +65,12 @@ def create_hierarchy(env: EnvProtocol, model: str):
                 ],
                 True,
                 name=f"{environment.name}_agent".lower().replace(" ", "_").strip(),
-                # additional_desc="\n\nIf you need help or cannot handle the task, return to the supervisor explaining why.",
             )
         )
 
     workflow = create_supervisor(
         agents,
-        model=init_chat_model(model),
+        model=model,
         prompt=(
             """You are a customer support assistant tasked with helping users.
 
@@ -77,12 +82,15 @@ You interface with the user. The agents reporting to you cannot. If the other ag
 Use all resources available to enable a successful interaction.
 
 The delegate agent will be able to read the transcript between you and the user. \
-If the delegate responds directly to the user, you can forward it using the forward_message tool."""
+If the delegate responds directly to the user, you can forward it using the forward_message tool.
+Use of the forward_message tool is strongly recommended to save cost and avoid miscommunication."""
         ),
         supervisor_name="support_supervisor",
-        handoff_prefix="delegate_to_",
+        handoff_prefix=handoff_prefix,
         tools=[other_tool],
         include_agent_name="inline",
+        add_forwarding=add_forwarding,
+        strip_handoffs=strip_handoffs,
     )
     return workflow.compile(checkpointer=checkpointer, name="Support Supervisor")
 
@@ -130,8 +138,13 @@ def create_full_swarm(
             )
         )
     tools = [t for a, t in handoff_tools.items() if a != router_name]
+
+    if model.startswith("google"):
+        model_ = init_chat_model(model).bind_tools(tools)
+    else:
+        model_ = init_chat_model(model).bind_tools(tools, parallel_tool_calls=False)
     first_line = create_react_agent(
-        init_chat_model(model).bind_tools(tools, parallel_tool_calls=False),
+        model_,
         tools=tools,
         prompt=(
             """You are a customer support agent tasked with helping users by delegating work to other agents.
@@ -161,6 +174,22 @@ def agent_factory(env: EnvProtocol, agent_strategy: str, model: str):
 
     elif agent_strategy == "supervisor":
         return create_hierarchy(env, model)
+    elif agent_strategy == "supervisor-invisihandoffs":
+        return create_hierarchy(env, model, strip_handoffs=True)
+    elif agent_strategy == "supervisor-forwarding":
+        return create_hierarchy(env, model, add_forwarding=True)
+    elif agent_strategy == "supervisor-forwarding-and-invisihandoffs":
+        return create_hierarchy(env, model, add_forwarding=True, strip_handoffs=True)
+    elif agent_strategy == "supervisor-forwarding-and-invisihandoffs-transfer-prefix":
+        return create_hierarchy(
+            env,
+            model,
+            add_forwarding=True,
+            strip_handoffs=True,
+            handoff_prefix="transfer_to_",
+        )
+    elif agent_strategy == "supervisor-transfer-prefix":
+        return create_hierarchy(env, model, handoff_prefix="transfer_to_")
     elif agent_strategy == "swarm":
         return create_full_swarm(env, model)
     elif agent_strategy == "tree":

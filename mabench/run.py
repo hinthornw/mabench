@@ -260,7 +260,17 @@ def main():
         "--agent-strategy",
         type=str,
         default="tool-calling",
-        choices=["single", "supervisor", "swarm", "tree"],
+        choices=[
+            "single",
+            "supervisor",
+            "swarm",
+            "tree",
+            "supervisor-invisihandoffs",
+            "supervisor-forwarding",
+            "supervisor-forwarding-and-invisihandoffs",
+            "supervisor-forwarding-and-invisihandoffs-transfer-prefix",
+            "supervisor-transfer-prefix",
+        ],
     )
     parser.add_argument(
         "--remote",

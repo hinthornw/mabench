@@ -5,7 +5,6 @@ from typing import cast
 from langchain_core.messages import (
     AIMessage,
     BaseMessage,
-    RemoveMessage,
     ToolCall,
     ToolMessage,
 )
@@ -131,17 +130,6 @@ def create_handoff_back_messages(
     )
 
 
-# def forward_message(source_agent: str) -> str:
-#         """If you'd like to directly route the most recent message from the "source_agent" you delegated to, use this tool.
-
-# This is useful for avoiding the need to rewrite the message content and for letting the delegate agent have
-# a more direct interaction with the user.
-
-# A major benefit of using this tool is that it helps prevent the 'telephone game' effect, where the supervisor
-# acts as a constant intermediary and may inadvertently cause information loss or distortion between agents and the user.
-# """
-#         return messages[0]
-
 
 def create_forward_message_tool(supervisor_name: str = "supervisor") -> BaseTool:
     """Create a tool that can handoff control to the requested agent.
@@ -155,14 +143,15 @@ def create_forward_message_tool(supervisor_name: str = "supervisor") -> BaseTool
             (the tool name will look like this: `transfer_to_<agent_name>`).
     """
     tool_name = "forward_message"
-    desc = """Use this tool to directly route the most recent message from the delegated 'source_agent' to the user, \
-avoiding message rewriting and preserving information fidelity by bypassing the supervisor as an intermediary.
-
-Highly recommended, so long as the message in question complies with your rules."""
+    desc = (
+        "Forwards the latest message from the specified agent to the user"
+        " without any changes. Use this to preserve information fidelity and avoid"
+        " misinterpretation of questions or responses."
+    )
 
     @tool(tool_name, description=desc)
     def forward_message(
-        source_agent: str,
+        from_agent: str,
         state: Annotated[dict, InjectedState],
         tool_call_id: Annotated[str, InjectedToolCallId],
     ):
@@ -171,23 +160,22 @@ Highly recommended, so long as the message in question complies with your rules.
                 (i, m)
                 for i, m in enumerate(reversed(state["messages"]))
                 if isinstance(m, AIMessage)
-                and (m.name or "").lower() == source_agent.lower()
+                and (m.name or "").lower() == from_agent.lower()
             ),
             None,
         )
         if not target_message:
-            return f"Could not find message from source agent {source_agent}"
+            found_names = set(
+                m.name for m in state["messages"] if isinstance(m, AIMessage) and m.name
+            )
+            return f"Could not find message from source agent {from_agent}. Found names: {found_names}"
         updates = [
-            # # Remove the AI message that called this.
-            # RemoveMessage(id=state["messages"][-1].id),
-            # # Remove the target message.
-            # RemoveMessage(id=target_message[1].id),
-            # Remove the handoff message
             state["messages"][-1],
             ToolMessage(
-                content=f"The following message is forwarded from {source_agent}.",
+                content=f"The following message is forwarded from {from_agent}.",
                 name=tool_name,
                 tool_call_id=tool_call_id,
+                id=str(uuid.uuid4()),
             ),
             AIMessage(
                 content=target_message[1].content,

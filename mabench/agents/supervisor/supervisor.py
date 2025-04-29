@@ -21,6 +21,7 @@ from mabench.agents.supervisor.handoff import (
     create_forward_message_tool,
 )
 from langchain_core.messages import ToolMessage, AIMessage
+from langchain.chat_models import init_chat_model
 
 OutputMode = Literal["full_history", "last_message"]
 """Mode for adding agent outputs to the message history in the multi-agent workflow
@@ -35,6 +36,8 @@ def _make_call_agent(
     output_mode: OutputMode,
     add_handoff_back_messages: bool,
     supervisor_name: str,
+    handoff_prefix: str,
+    strip_handoffs: bool = False,
 ) -> Callable[[dict], dict] | RunnableCallable:
     if output_mode not in OutputMode.__args__:
         raise ValueError(
@@ -53,25 +56,23 @@ def _make_call_agent(
                 f"Needs to be one of {OutputMode.__args__}"
             )
 
-        if False:  # add_handoff_back_messages:
-            # messages.extend(create_handoff_back_messages(agent.name, supervisor_name))
-            last_message = messages[-1]
-            messages.append(RemoveMessage(id=last_message.id))
-            messages.extend(
-                create_handoff_back_messages(
-                    agent.name, supervisor_name, message=last_message.content
-                )
-            )
-        # remove all the handoff messages
-        to_drop = []
-        for m in messages[:]:
-            if isinstance(m, ToolMessage) and m.name.startswith("delegate_to"):
-                messages.append(RemoveMessage(id=m.id))
-                to_drop.append(m.tool_call_id)
-        if to_drop:
+        if strip_handoffs:
+            to_drop = []
             for m in messages[:]:
-                if isinstance(m, AIMessage) and m.tool_calls:
-                    m.tool_calls = [c for c in m.tool_calls if c["id"] not in to_drop]
+                if isinstance(m, ToolMessage) and m.name.startswith(handoff_prefix):
+                    messages.append(RemoveMessage(id=m.id))
+                    to_drop.append(m.tool_call_id)
+            if to_drop:
+                for m in messages[:]:
+                    if isinstance(m, AIMessage) and m.tool_calls:
+                        m.tool_calls = [
+                            c for c in m.tool_calls if c["id"] not in to_drop
+                        ]
+                        if not m.tool_calls:
+                            messages.append(RemoveMessage(id=m.id))
+
+        elif add_handoff_back_messages:
+            messages.extend(create_handoff_back_messages(agent.name, supervisor_name))
 
         return {
             **output,
@@ -80,9 +81,6 @@ def _make_call_agent(
 
     def call_agent(state: dict) -> dict:
         # Drop last two messages
-        # messages = []
-        # for m in state["messages"][-2:]:
-        #     messages.append(RemoveMessage(id=m.id))
         output = agent.invoke(state)
         return _process_output(output)
 
@@ -109,6 +107,8 @@ def create_supervisor(
     supervisor_name: str = "supervisor",
     include_agent_name: AgentNameMode | None = None,
     handoff_prefix: str = "transfer_to_",
+    add_forwarding: bool = False,
+    strip_handoffs: bool = False,
 ) -> StateGraph:
     """Create a multi-agent supervisor.
 
@@ -176,10 +176,13 @@ def create_supervisor(
         for agent in agents
     ]
 
-    all_tools = (
-        (tools or []) + handoff_tools + [create_forward_message_tool(supervisor_name)]
-    )
-    model = model.bind_tools(all_tools, parallel_tool_calls=False)
+    all_tools = (tools or []) + handoff_tools
+    if add_forwarding:
+        all_tools.append(create_forward_message_tool(supervisor_name))
+    if model.startswith("google"):
+        model = init_chat_model(model).bind_tools(all_tools)
+    else:
+        model = init_chat_model(model).bind_tools(all_tools, parallel_tool_calls=False)
 
     if include_agent_name:
         model = with_agent_name(model, include_agent_name)
@@ -204,6 +207,8 @@ def create_supervisor(
                 output_mode,
                 add_handoff_back_messages,
                 supervisor_name,
+                handoff_prefix=handoff_prefix,
+                strip_handoffs=strip_handoffs,
             ),
         )
         builder.add_edge(agent.name, supervisor_agent.name)
